@@ -1,0 +1,81 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.mangadex.org/at-home/server/bfa473d4-64d8-4ecb-8577-5a443c6e8849
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-cache, private
+      Date:
+      - Sun, 12 Apr 2026 17:31:05 GMT
+      X-Ratelimit-Remaining:
+      - '39'
+      X-Ratelimit-Retry-After:
+      - '1776015065'
+      X-Ratelimit-Limit:
+      - '40'
+      X-Ratelimit-Retry-In:
+      - '0'
+      X-Cache:
+      - MISS
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - "*"
+      Vary:
+      - Origin
+      Md-Edge-Crs:
+      - Tk9ORQ
+      Server:
+      - MangaDex
+      Via:
+      - HTTP/1.1 NA-EAST-N1x2
+      X-Request-Id:
+      - 2a310679-fe57-41f7-b8f5-b326c6fc7d8d
+      Permissions-Policy:
+      - fullscreen=(self)
+      Referrer-Policy:
+      - strict-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - DENY
+      Cross-Origin-Embedder-Policy:
+      - unsafe-none
+      Cross-Origin-Opener-Policy:
+      - same-origin-allow-popups
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      Md-Progressive-Rollout-Bucket:
+      - '1393955921'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result":"ok","baseUrl":"https:\/\/cmdxd98sb0x3yprd.mangadex.network","chapter":{"hash":"b96d9ec2ffa0251591529bf97dd706bb","data":["1-b162329cb0f1bec2ccbc28505347c0eb3eb4b4adb89864ee8ac13aeb9aaf5a38.jpg","2-99c819cc95f314a273d815bc5c69a53f40a3520f02c106ef08d28d11a0eb4bf7.jpg","3-361b93da9493a2bf3afb7d08d37b8a925fd87062f4f70e26512ec4f7ae1eaa53.jpg","4-db6a7a4feee471283885ef3c3e6bec29554fe2fe1771260072033e5be181cafc.jpg","5-ed1e62f3864581adc56d8f6e44a996b87d9b970273d1dab91c3c52ce35ead102.jpg","6-359427c655d3eac4e5e356584c2cba23145e283f883f378fc9e7421fadf1722e.jpg","7-4d463b27449e81f91ca32a43450410c1d00eeeba9b9081da8425540692f5e499.jpg","8-a3e20d182bd8da79cff177d59d562f1179d98617f7aa88a65f51f9d5f27b7d02.jpg","9-aa2688f3a2c153d8873a542c744fb97c431659db9bbb8078137928d642ab7d74.jpg","10-f261dc6bfd5e4117e8a49fb7e2d425563162c83da7d34bc6680a73fc65e40816.jpg","11-05f22d4f81e93c79094e500b024e8961b97e6ce3900a233729e33fce0f7a5749.jpg","12-8cbd2f7470942f641a2ad55efb3f98a45f1fa23060b756a202825470e83233c8.jpg","13-ac1b566fd1c2b333e437f9f1ea075cda5beb9c555986671ec6296c228b000ddd.jpg","14-bcedfbbcefbb6341da4010f2fd3b00aa34f6f876318889d4b45c7082b55899fc.jpg","15-c6319ea509718d8efee1431280051ec9cba77a4b983819f515394c42c47aecf5.jpg","16-aca6a969de86fa0033ddb79ee95a485fee0ef0eed50b0d64b1120a76eafbf081.jpg","17-7342adb017607bae65039b077fb04b45fc24ba40b5e790f08744037739915b25.jpg","18-a41f74730ea933b107d7f647584ab431ed3cf93217ad6323388a70b100587dd0.jpg","19-4f1b0bb9e7ecbd9110919e5c6c76e945db363cfd6b05778c9de7438cf3bba5af.jpg","20-693d5cc593c8e7b89a7e377aa7eaf5c8e20bd598b1f941b86495547ea45d88a3.jpg","21-456976fa09e5072df70797e19e32aea2153d7a08d82d46ffbceec0f65b0222a9.jpg","22-d739b372fb7c3c61254db1e1cc74131425a4cd033aec5f2e52ff60c89aa5e888.jpg","23-aef294804d08debc205e1be5e4d61d1f4e80125ca377ca9cd57ad57d50829259.jpg","24-6a2175e674b65cca97905d980db0a12a78b47a86c3be4000a46cff944f20b3af.jpg","25-790901b77e6d3949825af231735d2dd237eafed6bb2d9f314742c02d828ea5b4.jpg","26-446cfc10fa40d4bc07e9d4532974c861334e34eef189114ee98187692faffe2f.jpg","27-6ea8ba14a222cb6374f6f5412d56c5d6a76c524205950cf81ed7d6eeea884385.jpg","28-fdb36633d4b4e30524ee17d6f979954ccfa154ebe9da5b1b7a28e8a3f61638c4.jpg","29-ff3e6fa94f78c91be9f1c4bfd2db659da110de797ee203fcf6ab6bf46f1100e2.jpg","30-c977f59536481a143aa4ee130a91aecd89098ec19c26e3bd01bd09bc73930f47.jpg","31-a12a66e979ebdcd96e36d5db98df1eb68bf829f316c87901091ff2ebf014018e.jpg","32-b09c38e66f20c8feea41ba80b8c90afd164e72858a8b1840ff416ed5d3ff3cf3.jpg","33-76150dd9498caceb48edcba6a03a93401d40ecc8e66d7d1afaf3e2ab0fa4dc5b.jpg","34-8175e8ecc1932c343247fcd70835f8ee0f7fbba53e5d62a561eb40f5f7ddbc09.jpg","35-e258f4219a6e4127417b51a43b129ac9ea203417334baafa7c7d2460d49d45a3.jpg","36-b4484ab00f90aedc3e1dad9c40dbc987dc0e4129d0b4648b7f6108cbdc701629.jpg","37-a11a17dee9bbf878960dd2cfa027dfed94f10689797796dbbce892c51a0bea18.jpg","38-b23248bd34e586d25f2b28fadde8b41c2cd66ae05f8e7ba43c6257a6c8345234.jpg","39-b6ac36a3a1cffe86fa146ceaf64c4a59e1d4148be6437c068c6d0a9e9f7e55f4.jpg","40-c0bb7f9affe76a3e6ccdec64c8f9e856ec192c0623909199ccd60cb5f608b1e9.jpg"],"dataSaver":["1-c23e771809359b4d49ecdc95e7b9a75c5fc585327c9d2afe8d1765f26360d31a.jpg","2-6825f7df5818c7b25a28ff69baac8077dbb700293dd350c2e53b4d2b26544c3d.jpg","3-c2247405624b245d03ae0a487b0b52976114b5c0052ee79d065ad46a85bc5d7b.jpg","4-09df8f416bed02194ad26a7d65bc06afc0dad39d1f09f2c3fb65a8149116a15c.jpg","5-287c78ee846decf69530dabb4dac522d673499f52746367b9ca11e19b105c174.jpg","6-507bb7a388ed00564bc1319c8f3360f7bb4e00c88a88d1a907170097494120e1.jpg","7-e55cc93d6016d940fe2764e8ba37bc50f116846cac22954026bf015ebc904f7d.jpg","8-bdbd91c5032d0c0090a85c4c8e8ca4db22e1077812e4be4174a2d657af21b30f.jpg","9-7f157bcedeadaf647fb05ec17d3050ff62e23a6dd5f729cf2e6fd6b6afbacff2.jpg","10-d0601349d3dd08f29dd977e999b072a2c0124b7812bce4424e4f3ff2705c14db.jpg","11-7f157bcedeadaf647fb05ec17d3050ff62e23a6dd5f729cf2e6fd6b6afbacff2.jpg","12-e9fde1546d38ad5072c24fb261844d627516924a26b7f5fe56b1199ec0361c5a.jpg","13-c411c957ad3103a7fc857d9af1c35856db3e49c5a72f6b0b0e8bce46398571e9.jpg","14-4421c876e838be8acf34f431468d7ef372468bd5bd273c943765bed8a94c4188.jpg","15-10b043dbaff4ef9a1bb5d218b3794b4dd43cbc785f410274649c118d44ea57d3.jpg","16-fe51d0389ec5673af042433ffd325efc441077dfe135745565ddd6736d436c4a.jpg","17-787ce5a298c4ddef0c4426d19404e6a9e1c07e47f4ff38d16096b7d1e3fb4235.jpg","18-b726277098fe64c5c76184b13fde0db33b0afb18ce1cadb558b21c1edc29349e.jpg","19-cb5367127171df2430e2f804e4592e1a62232f2f62dfeb762210a16f097c84a9.jpg","20-00f0c8f661455c088b57e711c56105be14ac194ed141e569a9ed38458f8ba56b.jpg","21-f2c6e167daf401a01416d0fac42bd5cc7b74fef898aa0647fa63b7ff4e0f186e.jpg","22-d20dea11a8a25d2accf34fc5f574d3c88e7d336df12e5c1837ebb7e3f9948f3d.jpg","23-5558a9b72d02d05af1d0de26d724beb97093ad612a536049fbb0758436d2ba2b.jpg","24-dc03cab8603bce6e46434c699e1e38f319c5f919ece1b78e4fb9f2c56a5de3ad.jpg","25-b0a79b7ab4414850366e298d075fb19413b45d1962e0e7bf3e0ecfa2429635ac.jpg","26-76785b776461e150122daa3c97224a5c7d85525eac0e07ba1ff83b873bcd24fe.jpg","27-0fa8b10ae64a9a99144ae2bd04ea6007216e74de227925d5d633401ba5667e61.jpg","28-59ce5d7ccf66b4777059e34cea7d4421660dc721c090c2c125f8398b3796546d.jpg","29-1d01f8118825db88cc81edcff7e4c813a700e2edd297e2267461e5b58f553603.jpg","30-080a5fae9712c4e7f414e3f4ac81128b43b2ea74ce9cf67cef40b30773b9b750.jpg","31-4d362d2b26663855b60bfe42bf0bf55e44a5b48182097b84acad4b858bd9c5a7.jpg","32-2230afda5708d10190482901ff3a969851364b710571d9871c5a9ac0a2bec2de.jpg","33-d04da3c0cee31903e91b8f4cada66ae6e3b38f2e1ccbf6505a7e9888699a0a3a.jpg","34-3b9ed3f1d50fce461bf9c589680bc77c6f20ae70f6700bcdedfdc5c55e616afe.jpg","35-1890cad4b9bfc33e046292311a57127bfd6210b98cba63c1a22cb0e7478869da.jpg","36-5cc5a98d35b170221bacd526e2174ba151669e3552ae9ac2c460221e173f9f37.jpg","37-a12f2abcb5a3822013a9d939ad48e5bcb48025885d4c26204546f5b03feee045.jpg","38-263e7bc0c4b6fcd4d5bc53eddd5f4cfd45b21294bf591524e3402815383fea0c.jpg","39-b80b22f77b0a95ace54dc496a00668b287910be3ce772d0143136251bf9d919f.jpg","40-b5ef60b02f299d0201a086c6742bb9386000b9b1f8890901c8d3103d00342401.jpg"]}}'
+  recorded_at: Sun, 12 Apr 2026 17:31:05 GMT
+recorded_with: VCR 6.4.0

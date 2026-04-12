@@ -1,0 +1,9 @@
+languages:
+  - code: pt-br
+    priority: 1
+  - code: es-la
+    priority: 2
+  - code: es
+    priority: 3
+  - code: en
+    priority: 4

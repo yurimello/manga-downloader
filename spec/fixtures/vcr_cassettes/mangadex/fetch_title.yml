@@ -1,0 +1,96 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.mangadex.org/manga/ffc29425-4682-4602-8328-005ed75c5316
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=15, public, s-maxage=2592000, stale-while-revalidate=15
+      Date:
+      - Sun, 12 Apr 2026 17:31:03 GMT
+      X-Cache:
+      - MISS
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - "*"
+      Vary:
+      - Origin
+      Md-Edge-Crs:
+      - Tk9ORQ
+      Server:
+      - MangaDex
+      Via:
+      - HTTP/1.1 NA-EAST-N1x1
+      X-Request-Id:
+      - 0773d9c0-42b9-418d-aaa9-57ca41817c3e
+      Permissions-Policy:
+      - fullscreen=(self)
+      Referrer-Policy:
+      - strict-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - DENY
+      Cross-Origin-Embedder-Policy:
+      - unsafe-none
+      Cross-Origin-Opener-Policy:
+      - same-origin-allow-popups
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      Md-Progressive-Rollout-Bucket:
+      - '1393955921'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result":"ok","response":"entity","data":{"id":"ffc29425-4682-4602-8328-005ed75c5316","type":"manga","attributes":{"title":{"en":"A
+        Girl on the Shore"},"altTitles":[{"es":"La chica de la orilla del mar"},{"fr":"La
+        fille de la plage"},{"ar":"\u0641\u062a\u0627\u0629 \u0639\u0644\u0649 \u0627\u0644\u0634\u0627\u0637\u0626"},{"ja":"\u3046\u307f\u3079\u306e\u5973\u306e\u5b50"},{"ja-ro":"Umibe
+        no Onnanoko"},{"ru":"\u0414\u0435\u0432\u0443\u0448\u043a\u0430 \u0443 \u043c\u043e\u0440\u044f"},{"en":"A
+        Girl by the Sea"},{"vi":"C\u00f4 G\u00e1i b\u00ean B\u1edd Bi\u1ec3n"}],"description":{"en":"Koume
+        Sato and Keisuke Isobe are two teenagers living in a sleepy seaside town.
+        After getting used and dumped by her crush the emotionally damaged Koume decides
+        to start a sexual relationship with Keisuke, without any emotions involved.
+        However, they both soon discover that sex with no strings attached does lead
+        to unexpected complications, not just for themselves but also the people surrounding
+        them.","es":"Koume Sato y Keisuke Isobe son dos adolescentes que viven en
+        una ciudad costera so\u00f1olienta. Despu\u00e9s de acostumbrarse y ser abandonado
+        por su enamoramiento, el emocionalmente da\u00f1ado Koume decide comenzar
+        una relaci\u00f3n sexual con Keisuke, sin ninguna emoci\u00f3n involucrada.
+        Sin embargo, ambos descubren pronto que el sexo sin ataduras conduce a complicaciones
+        inesperadas, no s\u00f3lo para ellos sino tambi\u00e9n para las personas que
+        los rodean.","pt-br":"Koume Sato e Kosuke Isobe s\u00e3o dois adolescentes
+        que vivem numa pacata cidade litor\u00e2nea. Depois de ter levado um fora
+        por sua paix\u00e3o, Koume emocionalmente machucada decide come\u00e7ar uma
+        rela\u00e7\u00e3o sexual com Kosuke, sem emo\u00e7\u00f5es envolvidas. No
+        entanto, ambos descobrem que o sexo sem compromisso levam a complica\u00e7\u00f5es
+        inesperadas, n\u00e3o apenas para si, mas tamb\u00e9m as pessoas que os cercam."},"isLocked":false,"links":{"al":"47353","ap":"a-girl-on-the-shore","kt":"4567","mu":"ihngnft","mal":"17353","raw":"https:\/\/kodansha.us\/series\/a-girl-on-the-shore\/"},"officialLinks":null,"originalLanguage":"ja","lastVolume":"2","lastChapter":"20","publicationDemographic":"seinen","status":"completed","year":2009,"contentRating":"erotica","tags":[{"id":"3b60b75c-a2d7-4860-ab56-05f391bb889c","type":"tag","attributes":{"name":{"en":"Psychological"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"423e2eae-a7a2-4a8b-ac03-a8351462d71d","type":"tag","attributes":{"name":{"en":"Romance"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"b1e97889-25b4-4258-b28b-cd7f4d28ea9b","type":"tag","attributes":{"name":{"en":"Philosophical"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"b9af3a63-f058-46de-a9a0-e0c13906197a","type":"tag","attributes":{"name":{"en":"Drama"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"caaa44eb-cd40-4177-b930-79d3ef2afe87","type":"tag","attributes":{"name":{"en":"School
+        Life"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"da2d50ca-3018-4cc0-ac7a-6b7d472a29ea","type":"tag","attributes":{"name":{"en":"Delinquents"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"e5301a23-ebd9-49dd-a0cb-2add944c7fe9","type":"tag","attributes":{"name":{"en":"Slice
+        of Life"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"f8f62932-27da-4fe4-8ee1-6779a8c5edba","type":"tag","attributes":{"name":{"en":"Tragedy"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-02-23T14:35:31+00:00","updatedAt":"2025-11-15T16:28:13+00:00","version":18,"availableTranslatedLanguages":["ru","es-la","vi","fa","en","pt-br"],"latestUploadedChapter":"ce941f8d-4b8f-443d-81c4-b1bba7df54fd"},"relationships":[{"id":"a5b9c82d-9cd3-41b8-ac46-6cb860d4e254","type":"author"},{"id":"a5b9c82d-9cd3-41b8-ac46-6cb860d4e254","type":"artist"},{"id":"fbe45ca8-c6e6-4fef-ae3a-f7d76f4b204b","type":"cover_art"}]}}'
+  recorded_at: Sun, 12 Apr 2026 17:31:04 GMT
+recorded_with: VCR 6.4.0

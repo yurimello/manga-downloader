@@ -1,0 +1,47 @@
+<section class="mb-12">
+  <h2 class="text-lg font-semibold mb-4">New Download</h2>
+
+  <%= form_with url: downloads_path, method: :post, class: "flex flex-col gap-3 sm:flex-row sm:items-end", data: { controller: "download-form" } do |f| %>
+    <div class="flex-1">
+      <label class="block text-sm text-gray-400 mb-1">MangaDex URL</label>
+      <input type="text" name="url" placeholder="https://mangadex.org/title/..." required
+        class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+    </div>
+    <div class="w-full sm:w-40">
+      <label class="block text-sm text-gray-400 mb-1">Volumes <span class="text-gray-600">(optional)</span></label>
+      <input type="text" name="volumes" placeholder="1, 2, 3"
+        class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+    </div>
+    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded transition">
+      Process
+    </button>
+  <% end %>
+</section>
+
+<section class="mb-12" data-controller="download-list" data-download-list-section-value="active">
+  <h2 class="text-lg font-semibold mb-4">Active Downloads</h2>
+
+  <div id="active-downloads" class="space-y-3">
+    <% if @active_downloads.empty? %>
+      <p class="text-gray-500 text-sm">No active downloads.</p>
+    <% end %>
+
+    <% @active_downloads.each do |download| %>
+      <%= render "active_download", download: download %>
+    <% end %>
+  </div>
+</section>
+
+<section data-controller="download-list" data-download-list-section-value="completed">
+  <h2 class="text-lg font-semibold mb-4">Completed</h2>
+
+  <div id="completed-downloads" class="space-y-3">
+    <% if @completed_downloads.empty? %>
+      <p class="text-gray-500 text-sm">No completed downloads yet.</p>
+    <% end %>
+
+    <% @completed_downloads.each do |download| %>
+      <%= render "completed_download", download: download %>
+    <% end %>
+  </div>
+</section>

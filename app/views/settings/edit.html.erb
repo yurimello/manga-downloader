@@ -1,0 +1,21 @@
+<h2 class="text-lg font-semibold mb-6">Settings</h2>
+
+<%= form_with url: settings_path, method: :patch, class: "space-y-6 max-w-lg" do |f| %>
+  <div>
+    <label class="block text-sm text-gray-400 mb-1">Max Concurrent Processes</label>
+    <input type="number" name="max_concurrent_processes" value="<%= @max_concurrent %>" min="1" max="10"
+      class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+    <p class="text-xs text-gray-500 mt-1">Number of simultaneous downloads allowed.</p>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-400 mb-1">Destination Root</label>
+    <input type="text" name="destination_root" value="<%= @destination_root %>"
+      class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+    <p class="text-xs text-gray-500 mt-1">Where downloaded manga volumes are saved.</p>
+  </div>
+
+  <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded transition">
+    Save
+  </button>
+<% end %>

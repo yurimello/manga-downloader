@@ -1,0 +1,40 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  web:
+    build: .
+    ports:
+      - "3333:3333"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - RAILS_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+    depends_on:
+      - redis
+    volumes:
+      - db_data:/rails/db
+      - ${DOWNLOAD_DIR:-./downloads}:/downloads
+
+  worker:
+    build: .
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - RAILS_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+    depends_on:
+      - redis
+    volumes:
+      - db_data:/rails/db
+      - ${DOWNLOAD_DIR:-./downloads}:/downloads
+
+volumes:
+  redis_data:
+  db_data:
