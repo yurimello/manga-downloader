@@ -14,14 +14,6 @@ class Download < ApplicationRecord
   end
 
   def log!(message, level: :info)
-    log = download_logs.create!(message: message, level: level)
-    ActionCable.server.broadcast("download_#{id}", {
-      type: "log_added",
-      download_id: id,
-      message: message,
-      level: level.to_s,
-      timestamp: log.created_at.iso8601
-    })
-    log
+    download_logs.create!(message: message, level: level)
   end
 end

@@ -24,12 +24,25 @@ class DownloadBroadcastObserver < ContextObserver
     })
   end
 
+  def on_log_added(context, message, level)
+    return unless context.download
+
+    ActionCable.server.broadcast("download_#{context.download.id}", {
+      type: "log_added",
+      download_id: context.download.id,
+      message: message,
+      level: level.to_s
+    })
+  end
+
   def on_error(context, error)
     return unless context.download
 
     context.download.update!(status: :failed, error_message: error.message, completed_at: Time.current)
     context.download.log!(error.message, level: :error)
+    on_log_added(context, error.message, :error)
     context.download.log!(error.backtrace&.first(5)&.join("\n"), level: :error)
+    on_log_added(context, error.backtrace&.first(5)&.join("\n"), :error)
 
     on_status_changed(context)
   end
