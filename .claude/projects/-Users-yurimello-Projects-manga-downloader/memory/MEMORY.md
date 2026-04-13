@@ -1,1 +1,2 @@
 - [VCR cassettes on E2E failure](feedback_vcr_cassettes.md) — Flush and re-record cassettes before debugging E2E failures
+- [No stubs in E2E tests](feedback_no_stubs_e2e.md) — E2E tests must not stub anything, VCR handles external APIs
