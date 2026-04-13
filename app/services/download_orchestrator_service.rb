@@ -1,9 +1,11 @@
-class DownloadOrchestratorService < ServicePipeline
-  steps DownloadOrchestratorSteps::FetchMangaInfoStep,
-        DownloadOrchestratorSteps::SelectChaptersStep,
-        DownloadOrchestratorSteps::DownloadImagesStep,
-        DownloadOrchestratorSteps::PackVolumesStep,
-        DownloadOrchestratorSteps::RecordVolumesStep
+class DownloadOrchestratorService
+  include Interactor::Organizer
+
+  organize DownloadOrchestratorSteps::FetchMangaInfoStep,
+           DownloadOrchestratorSteps::SelectChaptersStep,
+           DownloadOrchestratorSteps::DownloadImagesStep,
+           DownloadOrchestratorSteps::PackVolumesStep,
+           DownloadOrchestratorSteps::RecordVolumesStep
 
   around do |interactor|
     interactor.call

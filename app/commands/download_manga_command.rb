@@ -1,17 +1,17 @@
 class DownloadMangaCommand < BaseCommand
   def call
-    url = @context[:url]
-    volumes = @context[:volumes]
+    url = context.url
+    volumes = context.volumes
 
     if url.blank?
-      add_error("URL is required")
-      return self
+      context.fail!(message: "URL is required")
+      return
     end
 
     adapter = AdapterRegistry.for_url(url)
     unless adapter
-      add_error("No adapter found for this URL")
-      return self
+      context.fail!(message: "No adapter found for this URL")
+      return
     end
 
     source = AdapterRegistry.instance.sources.find { |s| AdapterRegistry.for_source(s)&.url_pattern&.match?(url) }
@@ -24,7 +24,6 @@ class DownloadMangaCommand < BaseCommand
     )
 
     DownloadMangaJob.perform_async(download.id)
-    @result = download
-    self
+    context.download = download
   end
 end

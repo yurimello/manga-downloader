@@ -5,6 +5,7 @@ RSpec.describe DownloadMangaJob do
   let(:result) { instance_double(Interactor::Context, success?: true) }
 
   before do
+    allow(AdapterRegistry).to receive(:for_url).and_return(instance_double(MangadexAdapter))
     allow(DownloadOrchestratorService).to receive(:call).and_return(result)
   end
 

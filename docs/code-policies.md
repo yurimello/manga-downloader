@@ -7,20 +7,20 @@ All user-facing actions go through commands (`app/commands/`). Controllers shoul
 
 Commands receive a **context hash** and return `self` with `success?`, `errors`, and `result`.
 
-### Command Chain
-When an action requires multiple steps, use `CommandChain` instead of creating a wrapper command that calls other commands.
+### Command Composition
+When an action requires multiple steps, use `Interactor::Organizer` to compose commands. Don't nest command calls inside other commands.
 
 ```ruby
-# Good
-CommandChain.new(
-  [ResolveDownloadCommand, DownloadMangaCommand],
-  download_id: params[:id]
-).call
+# Good — organizer composes commands
+class ReprocessDownloadCommand
+  include Interactor::Organizer
+  organize ResolveDownloadCommand, DownloadMangaCommand
+end
 
-# Bad — don't nest commands inside commands
+# Bad — command calling another command
 class ReprocessCommand < BaseCommand
   def call
-    DownloadMangaCommand.new(@context).call
+    DownloadMangaCommand.call(context)
   end
 end
 ```
@@ -55,12 +55,14 @@ end
 When a workflow has multiple sequential responsibilities, split it into steps and run them through `ServicePipeline`. Each step extends `BaseStep`, receives a shared context hash, and does one thing.
 
 ```ruby
-# Good — small focused steps composed via pipeline
-ServicePipeline.new([
-  DownloadOrchestratorSteps::FetchMangaInfoStep,
-  DownloadOrchestratorSteps::SelectChaptersStep,
-  DownloadOrchestratorSteps::DownloadImagesStep
-], context).call
+# Good — small focused steps composed via Interactor::Organizer
+class DownloadOrchestratorService
+  include Interactor::Organizer
+
+  organize FetchMangaInfoStep,
+           SelectChaptersStep,
+           DownloadImagesStep
+end
 
 # Bad — one service doing everything
 class BigService

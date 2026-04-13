@@ -5,10 +5,10 @@
 The application follows a layered architecture with clear separation of concerns:
 
 ```
-Request → Controller → Command → Job (composition root) → Orchestrator → ServicePipeline
+Request → Controller → Command → Job (composition root) → Orchestrator (Interactor::Organizer)
                                    ↓ injects                                    ↓
                             Adapter, Selector,                         Step → Step → Step
-                            Downloader, Packer                         (shared context)
+                            Downloader, Packer                         (shared Interactor::Context)
 ```
 
 ## Directory Structure

@@ -15,13 +15,9 @@ ServicePipeline
   └── DownloadOrchestratorSteps::RecordVolumesStep    → record volumes in DB, mark completed
 ```
 
-### ServicePipeline
-
-Base class using the `interactor` gem's `Interactor::Organizer`. Provides `steps` class method for declaring the step sequence. Each step includes `Interactor` via `BaseStep` and receives a shared `Interactor::Context`.
-
 ### DownloadOrchestratorService
 
-Thin wrapper that defines the step order, builds the context, and handles failure. All dependencies are injected via constructor — the orchestrator never instantiates other services.
+Uses `Interactor::Organizer` from the `interactor` gem to declare and run steps in sequence. All dependencies are injected via context — the orchestrator never instantiates other services. Error handling and tmpdir cleanup are handled in an `around` block.
 
 ```ruby
 DownloadOrchestratorService.new(
