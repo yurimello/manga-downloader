@@ -36,6 +36,13 @@ class DownloadBroadcastObserver < ContextObserver
   end
 
   def on_error(context, error)
-    on_status_changed(context)
+    if context.download
+      on_status_changed(context)
+    else
+      ActionCable.server.broadcast("notifications", {
+        type: "error",
+        message: error.message
+      })
+    end
   end
 end
