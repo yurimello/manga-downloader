@@ -126,7 +126,8 @@ Observers extend `ContextObserver` and implement:
 ### Services
 - One public method per service (usually `#call` or a descriptive name)
 - Injected dependencies via constructor
-- No direct database writes to unrelated models
+- Services can update models they own (e.g., steps update the download they orchestrate)
+- Services must not update models they don't own (e.g., a download step must not update a `User`)
 
 ### JavaScript
 - Stimulus controllers for all interactive behavior
