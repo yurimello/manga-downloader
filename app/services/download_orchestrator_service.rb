@@ -1,25 +1,7 @@
 class DownloadOrchestratorService
   include Interactor::Organizer
 
-  module StepDSL
-    def step(klass, **defaults)
-      step_definitions << [klass, defaults]
-      organize(*step_definitions.map(&:first))
-    end
-
-    def step_default(**defaults)
-      @step_defaults = (@step_defaults || {}).merge(defaults)
-    end
-
-    def step_definitions
-      @step_definitions ||= []
-    end
-
-    def global_defaults
-      @step_defaults || {}
-    end
-  end
-  extend StepDSL
+  extend InteractorStepDefinitions
 
   step DownloadOrchestratorSteps::FetchMangaInfoStep,
        adapter: -> (ctx) { AdapterRegistry.for_url(ctx[:download].url) }
