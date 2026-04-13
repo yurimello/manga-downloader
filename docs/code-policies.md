@@ -36,7 +36,7 @@ Business logic lives in services (`app/services/`), not in models or controllers
 - Services should not query models they don't own. Use model class methods or scopes instead.
 
 **Lib classes** (`lib/`) provide shared utilities:
-- `FileManager` — filesystem abstraction, injected into services
+- `SystemUtils` — filesystem abstraction, called as module methods (`SystemUtils.join`, `SystemUtils.mkdir_p`, etc.)
 - `LanguageConfig` — language codes/priorities from YAML config
 - `InteractorStepDefinitions` — DSL module for declaring step dependencies
 

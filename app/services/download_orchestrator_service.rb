@@ -17,13 +17,12 @@ class DownloadOrchestratorService
 
   step DownloadOrchestratorSteps::DownloadImagesStep,
        dependencies: {
-         file_manager: -> { FileManager.new },
-         downloader:   -> (ctx) { ImageDownloaderService.new(adapter: ctx[:adapter], file_manager: ctx[:file_manager]) }
+         downloader: -> (ctx) { ImageDownloaderService.new(adapter: ctx[:adapter]) }
        }
 
   step DownloadOrchestratorSteps::PackVolumesStep,
        dependencies: {
-         packer: -> (ctx) { CbzPackerService.new(file_manager: ctx[:file_manager]) }
+         packer: -> { CbzPackerService.new }
        }
 
   step DownloadOrchestratorSteps::RecordVolumesStep

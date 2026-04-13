@@ -1,7 +1,5 @@
 module DownloadOrchestratorSteps
   class RecordVolumesStep < BaseStep
-    include FileSystemAccess
-
     def call
       return if context.completed_early
 
@@ -15,7 +13,7 @@ module DownloadOrchestratorSteps
       end
 
       download.update!(status: :completed, progress: 100, completed_at: Time.current)
-      log!("Done! Files saved to: #{fs.join(Setting.fetch(:destination_root), context.title)}")
+      log!("Done! Files saved to: #{SystemUtils.join(Setting.fetch(:destination_root), context.title)}")
     end
   end
 end

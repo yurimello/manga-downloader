@@ -59,7 +59,7 @@ Each step inherits from `BaseStep` (which includes `Interactor`) and accesses sh
 
 **Cancellation**: Individual steps check `cancelled?` within loops.
 
-**Tmpdir cleanup**: `TmpdirCleanupService` runs in the `ensure` block — uses `FileManager` directly.
+**Tmpdir cleanup**: `TmpdirCleanupService` runs in the `ensure` block — uses `SystemUtils` directly.
 
 ## Services vs Steps
 
@@ -116,7 +116,7 @@ Utility services are infrastructure helpers — they can be instantiated directl
 
 Cleans up temporary directories after download orchestration.
 
-- Defaults to `FileManager.new` for filesystem operations
+- Uses `SystemUtils` module methods for filesystem operations
 - Single `call(path)` method — removes directory if it exists
 
 ## CbzPackerService

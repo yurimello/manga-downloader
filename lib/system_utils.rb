@@ -1,53 +1,53 @@
-class FileManager
-  def join(*parts)
+module SystemUtils
+  def self.join(*parts)
     File.join(*parts)
   end
 
-  def dirname(path)
+  def self.dirname(path)
     File.dirname(path)
   end
 
-  def extname(path)
+  def self.extname(path)
     File.extname(path)
   end
 
-  def binwrite(path, data)
+  def self.binwrite(path, data)
     File.binwrite(path, data)
   end
 
-  def mkdir_p(path)
+  def self.mkdir_p(path)
     FileUtils.mkdir_p(path)
   end
 
-  def rm_f(path)
+  def self.rm_f(path)
     FileUtils.rm_f(path)
   end
 
-  def rm_rf(path)
+  def self.rm_rf(path)
     FileUtils.rm_rf(path)
   end
 
-  def mktmpdir(prefix)
+  def self.mktmpdir(prefix)
     Dir.mktmpdir(prefix)
   end
 
-  def directory?(path)
+  def self.directory?(path)
     File.directory?(path)
   end
 
-  def writable?(path)
+  def self.writable?(path)
     File.writable?(path)
   end
 
-  def dir_exist?(path)
+  def self.dir_exist?(path)
     Dir.exist?(path)
   end
 
-  def glob(pattern)
+  def self.glob(pattern)
     Dir.glob(pattern).sort
   end
 
-  def images_in(dir)
+  def self.images_in(dir)
     glob(join(dir, "*.{jpg,jpeg,png,webp}"))
   end
 end
