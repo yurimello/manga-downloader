@@ -1,6 +1,6 @@
 class ChapterSelectorService
   def initialize(priorities: nil)
-    @priorities = priorities || LanguageLoaderService.priorities
+    @priorities = priorities || LanguageLoader.priorities
   end
 
   def select(chapters, volumes: nil)

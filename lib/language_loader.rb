@@ -1,5 +1,5 @@
-class LanguageLoaderService
-  def self.call
+class LanguageLoader
+  def self.codes
     config["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] }
   end
 
