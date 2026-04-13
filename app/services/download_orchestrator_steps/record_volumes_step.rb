@@ -13,7 +13,7 @@ module DownloadOrchestratorSteps
       end
 
       download.update!(status: :completed, progress: 100, completed_at: Time.current)
-      log!("Done! Files saved to: #{fs.join(Setting.fetch(:destination_root, '/downloads'), context.title)}")
+      log!("Done! Files saved to: #{context.file_manager.join(Setting.fetch(:destination_root, '/downloads'), context.title)}")
     end
   end
 end
