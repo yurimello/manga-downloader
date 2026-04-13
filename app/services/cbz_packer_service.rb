@@ -1,5 +1,5 @@
 class CbzPackerService
-  def initialize(file_manager: FileManager.new)
+  def initialize(file_manager:)
     @fs = file_manager
   end
 

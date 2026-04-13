@@ -3,9 +3,10 @@ require "rails_helper"
 RSpec.describe DownloadOrchestratorService do
   let(:download) { create(:download) }
   let(:adapter) { instance_double(MangadexAdapter) }
+  let(:file_manager) { FileManager.new }
   let(:selector) { ChapterSelectorService.new }
-  let(:downloader) { ImageDownloaderService.new(adapter: adapter) }
-  let(:packer) { CbzPackerService.new }
+  let(:downloader) { ImageDownloaderService.new(adapter: adapter, file_manager: file_manager) }
+  let(:packer) { CbzPackerService.new(file_manager: file_manager) }
   let(:observer) { DownloadBroadcastObserver.new }
 
   before do

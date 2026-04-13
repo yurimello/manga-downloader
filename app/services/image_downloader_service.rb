@@ -1,5 +1,5 @@
 class ImageDownloaderService
-  def initialize(adapter:, concurrency: 4, file_manager: FileManager.new)
+  def initialize(adapter:, file_manager:, concurrency: 4)
     @adapter = adapter
     @concurrency = concurrency
     @fs = file_manager
