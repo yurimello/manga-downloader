@@ -65,18 +65,18 @@ RSpec.describe DownloadOrchestratorService do
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts progress updates via observer" do
+    it "broadcasts progress automatically via Observable" do
       Dir.mktmpdir do |dir|
         run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
         "download_#{download.id}",
-        hash_including(type: "progress_updated", :progress => a_kind_of(Integer))
+        hash_including(type: "progress_updated", progress: a_kind_of(Integer))
       ).at_least(:once)
     end
 
-    it "broadcasts status changes via observer" do
+    it "broadcasts all status transitions via Observable" do
       Dir.mktmpdir do |dir|
         run_orchestrator(dest_dir: dir)
       end
@@ -94,6 +94,28 @@ RSpec.describe DownloadOrchestratorService do
       expect(ActionCable.server).to have_received(:broadcast).with(
         "download_#{download.id}",
         hash_including(type: "status_changed", status: "completed")
+      ).once
+    end
+
+    it "broadcasts log entries via Observable" do
+      Dir.mktmpdir do |dir|
+        run_orchestrator(dest_dir: dir)
+      end
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "log_added", message: a_kind_of(String))
+      ).at_least(:once)
+    end
+
+    it "broadcasts failure status on error via Observable" do
+      allow(adapter).to receive(:extract_manga_id).and_raise(StandardError, "boom")
+
+      run_orchestrator
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "status_changed", status: "failed", error_message: "boom")
       ).once
     end
 
