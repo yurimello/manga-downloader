@@ -30,7 +30,7 @@ Business logic lives in services (`app/services/`), not in models or controllers
 
 **Dependency Inversion Principle (DIP):**
 - No business service should know about or instantiate another business service. Dependencies are declared via the `step` DSL with lazy defaults.
-- Utility services (e.g., `TmpdirCleanupService`) can be instantiated directly — they are infrastructure, not domain logic.
+- Utility services (`app/services/service_utils/`) can be instantiated directly — they are infrastructure, not domain logic. Namespaced under `ServiceUtils::`.
 - The orchestrator's `initialize` resolves orchestrator-level dependencies (`dependency`), and `call` resolves per-step dependencies (`step ... dependencies:`) — both skip keys already present in context.
 - Callers can override any dependency: `DownloadOrchestratorService.call(download: d, packer: CustomPacker.new)`
 - Services should not query models they don't own. Use model class methods or scopes instead.

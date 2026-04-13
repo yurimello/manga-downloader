@@ -108,7 +108,11 @@ Picks the best chapter for each chapter number based on language priority.
 - Optionally filters by volume list
 - Returns `language_summary` for logging
 
-## TmpdirCleanupService
+## Utility Services (`service_utils/`)
+
+Utility services are infrastructure helpers — they can be instantiated directly without dependency injection.
+
+### ServiceUtils::TmpdirCleanup
 
 Cleans up temporary directories after download orchestration.
 

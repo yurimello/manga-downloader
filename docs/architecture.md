@@ -27,7 +27,8 @@ app/
 ├── models/            # ActiveRecord models
 ├── services/          # Business logic
 │   ├── concerns/                     # Shared modules for services/steps
-│   └── download_orchestrator_steps/  # Pipeline steps for download orchestration
+│   ├── download_orchestrator_steps/  # Pipeline steps for download orchestration
+│   └── service_utils/                # Utility services (infrastructure, not domain)
 └── views/             # ERB templates
 
 lib/
