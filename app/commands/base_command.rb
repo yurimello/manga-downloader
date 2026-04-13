@@ -15,17 +15,6 @@ class BaseCommand
     @errors.empty?
   end
 
-  def then(command_class)
-    return self unless success?
-
-    command = command_class.new(@context)
-    command.call
-    @errors.concat(command.errors)
-    @result = command.result if command.success?
-    @context = command.context
-    self
-  end
-
   private
 
   def add_error(message)
