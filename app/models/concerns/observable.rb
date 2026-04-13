@@ -1,9 +1,7 @@
 module Observable
-  extend ActiveSupport::Concern
-
-  included do
-    after_update :notify_observers_on_change
-    after_validation :notify_observers_on_validation_error, if: -> { errors.any? }
+  def self.included(base)
+    base.after_update :notify_observers_on_change
+    base.after_validation :notify_observers_on_validation_error, if: -> { errors.any? }
   end
 
   def add_observer(observer)
