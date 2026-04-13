@@ -6,7 +6,7 @@ RSpec.describe DownloadMangaJob do
 
   before do
     Setting.store(:max_concurrent_processes, "1")
-    Setting.store(:destination_root, "/downloads")
+    Setting.store(:destination_root, Dir.mktmpdir)
     allow(AdapterRegistry).to receive(:for_url).and_return(instance_double(MangadexAdapter))
     allow(DownloadOrchestratorService).to receive(:call).and_return(result)
   end

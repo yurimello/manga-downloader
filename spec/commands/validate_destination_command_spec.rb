@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe ValidateDestinationCommand do
   describe ".call" do
     it "passes when destination is configured" do
-      Setting.store(:destination_root, "/downloads")
+      Setting.store(:destination_root, Dir.mktmpdir)
       result = described_class.call
 
       expect(result).to be_success

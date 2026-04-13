@@ -12,13 +12,14 @@ RSpec.describe "Settings", type: :request do
 
   describe "PATCH /settings" do
     it "updates settings" do
+      dir = Dir.mktmpdir
       patch settings_path, params: {
         max_concurrent_processes: "3",
-        destination_root: "/tmp/manga"
+        destination_root: dir
       }
       expect(response).to redirect_to(edit_settings_path)
       expect(Setting.fetch(:max_concurrent_processes)).to eq("3")
-      expect(Setting.fetch(:destination_root)).to eq("/tmp/manga")
+      expect(Setting.fetch(:destination_root)).to eq(dir)
     end
   end
 end
