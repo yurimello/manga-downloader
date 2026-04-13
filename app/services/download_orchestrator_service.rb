@@ -39,7 +39,7 @@ class DownloadOrchestratorService
     context.observers.each { |o| o.on_error(context, e) }
     context.fail!(error: e)
   ensure
-    Utilities::TmpdirCleanup.new.call(context.tmpdir)
+    ServiceUtils::TmpdirCleanup.new.call(context.tmpdir)
   end
 
   def initialize(context = {})
