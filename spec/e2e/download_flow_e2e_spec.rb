@@ -21,14 +21,6 @@ RSpec.describe "Download E2E", type: :system do
     allow(DownloadMangaJob).to receive(:perform_async) do |download_id|
       DownloadMangaJob.new.perform(download_id)
     end
-    allow(adapter).to receive(:search_manga).and_return({
-      results: [
-        { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", title: "Magi", url: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", thumbnail: nil },
-        { id: "abc-other", title: "Magic Knight Rayearth", url: "https://mangadex.org/title/abc-other", thumbnail: nil }
-      ],
-      total: 2
-    })
-
     @adapter = adapter
   end
 
