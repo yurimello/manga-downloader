@@ -5,7 +5,6 @@ module DownloadOrchestratorSteps
 
       chapters = context.chapters
       downloader = context.downloader
-      fs = context.file_manager || FileManager.new
       tmpdir = fs.mktmpdir("manga_dl_")
       context.tmpdir = tmpdir
 

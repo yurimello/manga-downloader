@@ -8,6 +8,10 @@ module DownloadOrchestratorSteps
       context.download
     end
 
+    def fs
+      context.file_manager
+    end
+
     def log!(message, level: :info)
       download.log!(message, level: level)
       notify_observers(:on_log_added, message, level)

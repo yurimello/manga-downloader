@@ -14,8 +14,7 @@ class DownloadOrchestratorService
     context.fail!(error: e)
   ensure
     tmpdir = context.tmpdir
-    fs = context.file_manager || FileManager.new
-    fs.rm_rf(tmpdir) if tmpdir && fs.dir_exist?(tmpdir)
+    context.file_manager.rm_rf(tmpdir) if tmpdir && context.file_manager&.dir_exist?(tmpdir)
   end
 
   def call

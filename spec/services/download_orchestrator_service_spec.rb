@@ -38,6 +38,7 @@ RSpec.describe DownloadOrchestratorService do
       selector: selector,
       downloader: downloader,
       packer: packer,
+      file_manager: FileManager.new,
       observers: [observer]
     )
   end
