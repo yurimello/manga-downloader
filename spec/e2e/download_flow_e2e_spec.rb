@@ -21,6 +21,13 @@ RSpec.describe "Download E2E", type: :system do
     allow(DownloadMangaJob).to receive(:perform_async) do |download_id|
       DownloadMangaJob.new.perform(download_id)
     end
+    allow(adapter).to receive(:search_manga).and_return({
+      results: [
+        { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", title: "Magi", url: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", thumbnail: nil },
+        { id: "abc-other", title: "Magic Knight Rayearth", url: "https://mangadex.org/title/abc-other", thumbnail: nil }
+      ],
+      total: 2
+    })
 
     @adapter = adapter
   end
@@ -168,6 +175,35 @@ RSpec.describe "Download E2E", type: :system do
       click_button "Process"
 
       expect(page).to have_content("not configured", wait: 5)
+    end
+  end
+
+  describe "search and select manga", :js do
+    it "searches by title, selects result, and fills URL", vcr: { cassette_name: "mangadex/search_magi" } do
+      stub_chapters([
+        { id: "ch1", chapter: "1", volume: "1", language: "en" }
+      ])
+      stub_images
+
+      # Use real adapter so VCR can intercept HTTP in Puma thread
+      AdapterRegistry.instance.register(:mangadex,
+        MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" }))
+
+      visit root_path
+
+      find("[data-manga-search-target='input']").send_keys("Magi")
+
+      # Dropdown appears with results from MangaDex API (via VCR cassette)
+      expect(page).to have_css("[data-manga-search-target='results'] [data-action]", wait: 10)
+
+      # Select first result from dropdown
+      within "[data-manga-search-target='results']" do
+        first("[data-action='click->manga-search#select']").click
+      end
+
+      # URL input is filled
+      url_input = find("[data-manga-search-target='urlInput']")
+      expect(url_input.value).to include("mangadex.org/title/")
     end
   end
 

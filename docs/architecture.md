@@ -63,6 +63,15 @@ Key-value store for persistent configuration. Includes `Observable`.
 - Validates `destination_root` is a writable directory
 - **Observable events**: `on_error` (after_validation, when errors present)
 
+## Search Flow
+
+1. User types in the search input — Stimulus `manga_search_controller` debounces (300ms)
+2. JS fetches `GET /search?q=query&offset=0&source=mangadex`
+3. `SearchController` calls `adapter.search_manga(query)` via `AdapterRegistry.for_source`
+4. Results rendered in dropdown with thumbnails — max 5 visible, infinite scroll loads next 5
+5. User clicks a result — title fills search input, URL fills URL input
+6. Advanced panel allows selecting a different source adapter
+
 ## Request Flow
 
 1. User submits a URL via the form
@@ -79,6 +88,7 @@ Adapters abstract manga sources behind a common interface:
 
 ```
 BaseAdapter (abstract)
+  ├── search_manga         # Search by title (paginated)
   ├── url_pattern          # Regex to match supported URLs
   ├── extract_manga_id     # Parse ID from URL
   ├── fetch_manga_title    # Get title from API

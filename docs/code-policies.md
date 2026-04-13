@@ -157,9 +157,10 @@ Observers extend `ContextObserver` and implement:
 - `spec/e2e/` — end-to-end tests (full download lifecycle, CBZ verification, settings validation)
 
 ### Test Policies
-- External HTTP calls are mocked with WebMock
-- VCR cassettes for adapter integration tests
+- **VCR cassettes** for real API interactions (adapter integration tests, search E2E)
+- **WebMock stubs** for fake URLs (CDN), controlled failures (retries), and inline image data
 - System and E2E specs use headless Chrome via Selenium with inline Sidekiq
+- E2E search test uses real adapter + VCR (instance_double stubs don't work across Puma threads)
 - VCR allows localhost connections (`ignore_localhost = true`) for browser tests
 - All specs that create downloads set `destination_root` to `Dir.mktmpdir` — never write to real folders
 

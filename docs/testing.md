@@ -32,7 +32,7 @@ spec/
 │   ├── reprocess_download_command_spec.rb # Organizer chain execution
 │   └── validate_destination_command_spec.rb # Destination validation, observer notification
 ├── e2e/
-│   └── download_flow_e2e_spec.rb          # Full lifecycle: download, volumes, reprocess, cancel, settings
+│   └── download_flow_e2e_spec.rb          # Full lifecycle: download, volumes, reprocess, cancel, search, settings
 ├── features/
 │   ├── download_flow_spec.rb             # Form submission, active/completed display
 │   └── settings_flow_spec.rb            # Settings form, validation errors
@@ -45,6 +45,7 @@ spec/
 │   └── setting_observer_spec.rb          # Observable: validation error notifications
 ├── requests/
 │   ├── downloads_spec.rb                 # HTTP endpoints
+│   ├── search_spec.rb                    # Search API endpoint, pagination
 │   └── settings_spec.rb                  # HTTP endpoints, validation errors
 ├── services/
 │   ├── chapter_selector_service_spec.rb  # Language selection, volume filtering
@@ -83,6 +84,7 @@ Full lifecycle tests using Capybara + Selenium. Cover the entire flow from form 
 - Cancel works
 - Destination validation errors shown
 - Settings validation errors shown
+- Search by title, select from dropdown, fill URL
 
 ## Key Testing Patterns
 
@@ -108,8 +110,19 @@ let(:adapter) { instance_double(MangadexAdapter) }
 before { allow(AdapterRegistry).to receive(:for_url).and_return(adapter) }
 ```
 
-### Stubbing External HTTP (CDN)
+### VCR vs WebMock
+Use **VCR cassettes** for recording real API interactions (e.g., MangaDex search, chapter feeds). Use **WebMock stubs** for:
+- Fake CDN URLs (`cdn.example.com`) that don't exist — nothing to record
+- Controlled failure scenarios (429 retries, error sequences in `HttpClientService`)
+- Inline image data for download tests
+
 ```ruby
+# VCR — real API call recorded and replayed
+it "searches manga", vcr: { cassette_name: "mangadex/search_magi" } do
+  results = adapter.search_manga("Magi")
+end
+
+# WebMock — fake CDN for download tests
 stub_request(:get, %r{https://cdn\.example\.com/data/abc/.*})
   .to_return(status: 200, body: "fake_image_data")
 ```

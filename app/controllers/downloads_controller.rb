@@ -2,6 +2,7 @@ class DownloadsController < ApplicationController
   def index
     @active_downloads = Download.active.order(created_at: :desc)
     @completed_downloads = Download.completed_or_failed.order(completed_at: :desc).limit(20)
+    @sources = AdapterRegistry.instance.sources
   end
 
   def create
