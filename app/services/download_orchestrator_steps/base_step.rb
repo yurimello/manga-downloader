@@ -4,13 +4,17 @@ module DownloadOrchestratorSteps
 
     private
 
+    def observers
+      @observers ||= context.observers || []
+    end
+
     def download
       context.download
     end
 
     def log!(message, level: :info)
       download.log!(message, level: level)
-      (context.observers || []).each { |o| o.on_log_added(context, message, level) }
+      observers.each { |o| o.on_log_added(context, message, level) }
     end
   end
 end

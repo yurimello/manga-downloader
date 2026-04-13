@@ -1,9 +1,8 @@
 module DownloadOrchestratorSteps
   class SelectChaptersStep < BaseStep
     def call
-      languages = load_languages
       log!("Fetching chapters...")
-      raw_chapters = context.adapter.fetch_chapters(context.manga_id, languages: languages)
+      raw_chapters = context.adapter.fetch_chapters(context.manga_id, languages: context.languages)
       log!("Found #{raw_chapters.size} total chapters across all languages")
 
       volumes_filter = parse_volumes(download.volumes)
@@ -34,11 +33,6 @@ module DownloadOrchestratorSteps
     end
 
     private
-
-    def load_languages
-      config = YAML.load_file(Rails.root.join("config", "languages.yml"))
-      config["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] }
-    end
 
     def parse_volumes(volumes_str)
       return nil if volumes_str.blank?

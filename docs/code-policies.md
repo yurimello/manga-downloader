@@ -34,14 +34,15 @@ Business logic lives in services (`app/services/`), not in models or controllers
 - Services should not query models they don't own. Use model class methods or scopes instead.
 
 ```ruby
-# Good — dependencies injected
-DownloadOrchestratorService.new(
-  download,
+# Good — dependencies injected via context, job is composition root
+DownloadOrchestratorService.call(
+  download: download,
   adapter: adapter,
   selector: ChapterSelectorService.new,
   downloader: ImageDownloaderService.new(adapter: adapter),
-  packer: CbzPackerService.new
-).call
+  packer: CbzPackerService.new,
+  observers: [DownloadBroadcastObserver.new]
+)
 
 # Bad — service instantiates its own dependencies
 class OrchestratorService

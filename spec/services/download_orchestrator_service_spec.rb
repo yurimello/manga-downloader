@@ -39,6 +39,7 @@ RSpec.describe DownloadOrchestratorService do
       downloader: downloader,
       packer: packer,
       file_manager: FileManager.new,
+      languages: ["pt-br", "en"],
       observers: [observer]
     )
   end

@@ -10,7 +10,10 @@ class DownloadOrchestratorService
   around do |interactor|
     interactor.call
   rescue => e
-    (context.observers || []).each { |o| o.on_error(context, e) }
+    context.download.update!(status: :failed, error_message: e.message, completed_at: Time.current)
+    context.download.log!(e.message, level: :error)
+    context.download.log!(e.backtrace&.first(5)&.join("\n"), level: :error)
+    observers.each { |o| o.on_error(context, e) }
     context.fail!(error: e)
   ensure
     tmpdir = context.tmpdir
@@ -20,7 +23,13 @@ class DownloadOrchestratorService
   def call
     self.class.organized.each do |step|
       step.call!(context)
-      (context.observers || []).each { |o| o.on_status_changed(context) }
+      observers.each { |o| o.on_status_changed(context) }
     end
+  end
+
+  private
+
+  def observers
+    @observers ||= context.observers || []
   end
 end
