@@ -1,12 +1,14 @@
 module DownloadOrchestratorSteps
   class PackVolumesStep < BaseStep
+    include FileSystemAccess
+
     def call
       return if context.completed_early
 
       download.update!(status: :packing)
       log!("Packing volumes...")
 
-      dest = context.file_manager.join(Setting.fetch(:destination_root, "/downloads"), context.title)
+      dest = fs.join(Setting.fetch(:destination_root, "/downloads"), context.title)
       volumes = context.chapters.map { |ch| ch[:volume] }.uniq.sort_by { |v| v.to_f }
 
       results = if volumes.all? { |v| v == "0" }

@@ -1,17 +1,19 @@
 module DownloadOrchestratorSteps
   class DownloadImagesStep < BaseStep
+    include FileSystemAccess
+
     def call
       return if context.completed_early
 
       chapters = context.chapters
       downloader = context.downloader
-      tmpdir = context.file_manager.mktmpdir("manga_dl_")
+      tmpdir = fs.mktmpdir("manga_dl_")
       context.tmpdir = tmpdir
 
       total_images = 0
       chapter_images = {}
       chapters.each do |ch|
-        return if download.reload.cancelled?
+        return if cancelled?
         count = downloader.count_images(ch[:id])
         chapter_images[ch[:id]] = count
         total_images += count
@@ -22,9 +24,9 @@ module DownloadOrchestratorSteps
       volume_stats = Hash.new { |h, k| h[k] = { chapters: 0, pages: 0 } }
 
       chapters.each do |ch|
-        return if download.reload.cancelled?
+        return if cancelled?
 
-        chdir = context.file_manager.join(tmpdir, "vol#{ch[:volume]}", "ch#{ch[:chapter].gsub('.', '_')}")
+        chdir = fs.join(tmpdir, "vol#{ch[:volume]}", "ch#{ch[:chapter].gsub('.', '_')}")
         log!("Ch.#{ch[:chapter]} (Vol.#{ch[:volume]}) — #{chapter_images[ch[:id]]} pages")
 
         count = downloader.download_chapter(ch[:id], chdir) do
@@ -33,7 +35,7 @@ module DownloadOrchestratorSteps
           download.update!(progress: progress)
           context.downloaded_images = downloaded_images
           context.total_images = total_images
-          (context.observers || []).each { |o| o.on_progress_updated(context) }
+          notify_progress
         end
 
         volume_stats[ch[:volume]][:chapters] += 1
@@ -43,6 +45,16 @@ module DownloadOrchestratorSteps
       end
 
       context.volume_stats = volume_stats
+    end
+
+    private
+
+    def cancelled?
+      download.reload.cancelled?
+    end
+
+    def notify_progress
+      (context.observers || []).each { |o| o.on_progress_updated(context) }
     end
   end
 end
