@@ -1,30 +1,43 @@
 class DownloadOrchestratorService
   include Interactor::Organizer
 
-  organize DownloadOrchestratorSteps::FetchMangaInfoStep,
-           DownloadOrchestratorSteps::SelectChaptersStep,
-           DownloadOrchestratorSteps::DownloadImagesStep,
-           DownloadOrchestratorSteps::PackVolumesStep,
-           DownloadOrchestratorSteps::RecordVolumesStep
+  module StepDSL
+    def step(klass, **defaults)
+      step_definitions << [klass, defaults]
+      organize(*step_definitions.map(&:first))
+    end
 
-  def initialize(context = {})
-    context = context.to_h if context.respond_to?(:to_h) && !context.is_a?(Hash)
-    download      = context[:download]
-    file_manager  = context[:file_manager]  || FileManager.new
-    adapter       = context[:adapter]       || AdapterRegistry.for_url(download.url)
+    def step_default(**defaults)
+      @step_defaults = (@step_defaults || {}).merge(defaults)
+    end
 
-    defaults = {
-      adapter:      adapter,
-      file_manager: file_manager,
-      selector:     context[:selector]    || ChapterSelectorService.new,
-      downloader:   context[:downloader]  || ImageDownloaderService.new(adapter: adapter, file_manager: file_manager),
-      packer:       context[:packer]      || CbzPackerService.new(file_manager: file_manager),
-      languages:    context[:languages]   || self.class.load_languages,
-      observers:    context[:observers]   || [DownloadBroadcastObserver.new]
-    }
+    def step_definitions
+      @step_definitions ||= []
+    end
 
-    super(defaults.merge(context))
+    def global_defaults
+      @step_defaults || {}
+    end
   end
+  extend StepDSL
+
+  step DownloadOrchestratorSteps::FetchMangaInfoStep,
+       adapter: -> (ctx) { AdapterRegistry.for_url(ctx[:download].url) }
+
+  step DownloadOrchestratorSteps::SelectChaptersStep,
+       selector:  -> { ChapterSelectorService.new },
+       languages: -> { YAML.load_file(Rails.root.join("config", "languages.yml"))["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] } }
+
+  step DownloadOrchestratorSteps::DownloadImagesStep,
+       file_manager: -> { FileManager.new },
+       downloader:   -> (ctx) { ImageDownloaderService.new(adapter: ctx[:adapter], file_manager: ctx[:file_manager]) }
+
+  step DownloadOrchestratorSteps::PackVolumesStep,
+       packer: -> (ctx) { CbzPackerService.new(file_manager: ctx[:file_manager]) }
+
+  step DownloadOrchestratorSteps::RecordVolumesStep
+
+  step_default observers: -> { [DownloadBroadcastObserver.new] }
 
   around do |interactor|
     interactor.call
@@ -39,15 +52,29 @@ class DownloadOrchestratorService
     context.file_manager&.rm_rf(tmpdir) if tmpdir && context.file_manager&.dir_exist?(tmpdir)
   end
 
+  def initialize(context = {})
+    resolved = context.dup
+    self.class.global_defaults.each do |key, factory|
+      next if resolved.key?(key)
+      resolved[key] = resolve_factory(factory, resolved)
+    end
+    super(resolved)
+  end
+
   def call
-    self.class.organized.each do |step|
-      step.call!(context)
+    self.class.step_definitions.each do |step_class, defaults|
+      defaults.each do |key, factory|
+        context[key] ||= resolve_factory(factory, context)
+      end
+      step_class.call!(context)
       context.observers.each { |o| o.on_status_changed(context) }
     end
   end
 
-  def self.load_languages
-    config = YAML.load_file(Rails.root.join("config", "languages.yml"))
-    config["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] }
+  private
+
+  def resolve_factory(factory, ctx)
+    return factory unless factory.respond_to?(:call)
+    factory.arity == 0 ? factory.call : factory.call(ctx)
   end
 end
