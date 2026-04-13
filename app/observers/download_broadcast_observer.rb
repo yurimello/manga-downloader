@@ -1,43 +1,35 @@
 class DownloadBroadcastObserver < ContextObserver
-  def on_status_changed(context)
-    return unless context.download
-
-    ActionCable.server.broadcast("download_#{context.download.id}", {
+  def on_status_changed(download)
+    ActionCable.server.broadcast("download_#{download.id}", {
       type: "status_changed",
-      download_id: context.download.id,
-      status: context.download.status,
-      title: context.download.title,
-      progress: context.download.progress,
-      error_message: context.download.error_message
+      download_id: download.id,
+      status: download.status,
+      title: download.title,
+      progress: download.progress,
+      error_message: download.error_message
     })
   end
 
-  def on_progress_updated(context)
-    return unless context.download
-
-    ActionCable.server.broadcast("download_#{context.download.id}", {
+  def on_progress_updated(download)
+    ActionCable.server.broadcast("download_#{download.id}", {
       type: "progress_updated",
-      download_id: context.download.id,
-      progress: context.download.progress,
-      downloaded_images: context.downloaded_images,
-      total_images: context.total_images
+      download_id: download.id,
+      progress: download.progress
     })
   end
 
-  def on_log_added(context, message, level)
-    return unless context.download
-
-    ActionCable.server.broadcast("download_#{context.download.id}", {
+  def on_log_added(download, message, level)
+    ActionCable.server.broadcast("download_#{download.id}", {
       type: "log_added",
-      download_id: context.download.id,
+      download_id: download.id,
       message: message,
       level: level.to_s
     })
   end
 
-  def on_error(context, error)
-    if context.download
-      on_status_changed(context)
+  def on_error(source, error)
+    if source.is_a?(Download)
+      on_status_changed(source)
     else
       ActionCable.server.broadcast("notifications", {
         type: "error",

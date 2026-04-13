@@ -1,4 +1,6 @@
 class Setting < ApplicationRecord
+  include Observable
+
   validates :key, presence: true, uniqueness: true
   validate :destination_root_must_be_writable, if: -> { key == "destination_root" && value.present? }
 
@@ -6,9 +8,10 @@ class Setting < ApplicationRecord
     find_by(key: key.to_s)&.value || default
   end
 
-  def self.store(key, value)
+  def self.store(key, value, observers: [])
     setting = find_or_initialize_by(key: key.to_s)
     setting.value = value.to_s
+    observers.each { |o| setting.add_observer(o) }
     setting.save!
     setting
   end

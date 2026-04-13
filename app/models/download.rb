@@ -1,4 +1,6 @@
 class Download < ApplicationRecord
+  include Observable
+
   enum :status, { queued: 0, downloading: 1, packing: 2, completed: 3, failed: 4, cancelled: 5 }
 
   has_many :download_volumes, dependent: :destroy
@@ -14,6 +16,8 @@ class Download < ApplicationRecord
   end
 
   def log!(message, level: :info)
-    download_logs.create!(message: message, level: level)
+    log = download_logs.create!(message: message, level: level)
+    notify(:on_log_added, message, level)
+    log
   end
 end

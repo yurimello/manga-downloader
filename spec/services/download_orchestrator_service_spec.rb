@@ -65,14 +65,14 @@ RSpec.describe DownloadOrchestratorService do
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts image-level progress via observer" do
+    it "broadcasts progress updates via observer" do
       Dir.mktmpdir do |dir|
         run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
         "download_#{download.id}",
-        hash_including(type: "progress_updated", :downloaded_images => a_kind_of(Integer), :total_images => a_kind_of(Integer))
+        hash_including(type: "progress_updated", :progress => a_kind_of(Integer))
       ).at_least(:once)
     end
 

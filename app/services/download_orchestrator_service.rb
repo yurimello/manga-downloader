@@ -29,13 +29,16 @@ class DownloadOrchestratorService
 
   dependency observers: -> { [DownloadBroadcastObserver.new] }
 
+  before do
+    context.observers.each { |o| context.download.add_observer(o) }
+  end
+
   around do |interactor|
     interactor.call
   rescue => e
     context.download.update!(status: :failed, error_message: e.message, completed_at: Time.current)
     context.download.log!(e.message, level: :error)
     context.download.log!(e.backtrace&.first(5)&.join("\n"), level: :error)
-    context.observers.each { |o| o.on_error(context, e) }
     context.fail!(error: e)
   ensure
     ServiceUtils::TmpdirCleanup.new.call(context.tmpdir)
@@ -56,7 +59,6 @@ class DownloadOrchestratorService
         context[key] ||= resolve_factory(factory, context)
       end
       step_class.call!(context)
-      context.observers.each { |o| o.on_status_changed(context) }
     end
   end
 
