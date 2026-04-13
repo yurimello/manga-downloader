@@ -14,7 +14,7 @@ When an action requires multiple steps, use `Interactor::Organizer` to compose c
 # Good — organizer composes commands
 class ReprocessDownloadCommand
   include Interactor::Organizer
-  organize ResolveDownloadCommand, DownloadMangaCommand
+  organize ResolveDownloadCommand, ValidateDestinationCommand, DownloadMangaCommand
 end
 
 # Bad — command calling another command
@@ -39,6 +39,7 @@ Business logic lives in services (`app/services/`), not in models or controllers
 - `SystemUtils` — filesystem abstraction, called as module methods (`SystemUtils.join`, `SystemUtils.mkdir_p`, etc.)
 - `LanguageConfig` — language codes/priorities from YAML config
 - `InteractorStepDefinitions` — DSL module for declaring step dependencies
+- `Observable` — observer pattern module (add_observer, notify), included by models
 
 ```ruby
 # Good — defaults declared per step, caller overrides what it needs
@@ -85,27 +86,33 @@ end
 Source-specific logic (fetching manga from MangaDex, etc.) lives in adapters (`app/adapters/`). All adapters implement the same interface defined in `BaseAdapter`. New sources are added via config, not code changes to existing files.
 
 ### Observer Pattern
-Steps and commands must never call ActionCable directly. Use observers passed via `context.observers` to decouple broadcasting from business logic.
+Models include `Observable` from `lib/observable.rb`. State changes trigger observer notifications automatically via ActiveRecord callbacks. No step, service, or command touches ActionCable directly.
 
-The orchestrator notifies `on_status_changed` after each step via its `call` method. Steps only call `notify_observers(:on_progress_updated)` explicitly for high-frequency updates. Errors are caught in the orchestrator's `around` hook.
+- Models define their own callbacks (e.g., `after_update :notify_status_changed`)
+- Models call `notify(:event, *args)` which triggers all registered observers
+- Observers extend `ContextObserver` and implement event methods
+- Progress uses `notify` without DB writes — only broadcasts via observer
 
 ```ruby
-# Orchestrator handles status notifications — steps stay clean
-def call
-  self.class.step_definitions.each do |step_class, deps|
-    # resolve per-step dependencies before running
-    deps.each { |key, factory| context[key] ||= resolve_factory(factory, context) }
-    step_class.call!(context)
-    context.observers.each { |o| o.on_status_changed(context) }
+# Model defines when to notify
+class Download < ApplicationRecord
+  include Observable
+  after_update :notify_status_changed, if: -> { saved_change_to_attribute?("status") }
+end
+
+# Observer handles broadcasting
+class DownloadBroadcastObserver < ContextObserver
+  def on_status_changed(download)
+    ActionCable.server.broadcast(...)
   end
 end
 ```
 
 Observers extend `ContextObserver` and implement:
-- `on_status_changed(context)` — called by orchestrator after each step
-- `on_log_added(context, message, level)` — called by `BaseStep#log!` on every log
-- `on_progress_updated(context)` — called by `DownloadImagesStep` per-image
-- `on_error(context, error)` — called by orchestrator's `around` hook on failure
+- `on_status_changed(download)` — download status changed (automatic via after_update)
+- `on_progress_updated(download, progress)` — per-image progress (explicit notify, no DB write)
+- `on_log_added(download, message, level)` — log entry created (via `log!`)
+- `on_error(source, error)` — failure or validation error
 
 ### Shared Behavior Scope Rules
 - **All steps** use it → put in `BaseStep`
@@ -121,38 +128,40 @@ Observers extend `ContextObserver` and implement:
 
 ### Models
 - Validations, associations, scopes, and simple instance methods only
-- No HTTP calls or external service interactions
-- No ActionCable broadcasting — models only persist data
-
-### Services
-- One public method per service (usually `#call` or a descriptive name)
-- Injected dependencies via constructor
+- Include `Observable` for real-time notifications
+- No direct ActionCable calls — use `notify` which triggers observers
 - Services can update models they own (e.g., steps update the download they orchestrate)
 - Services must not update models they don't own (e.g., a download step must not update a `User`)
 
+### Services
+- One public method per service (usually `#call` or a descriptive name)
+- Use `SystemUtils` module methods for filesystem operations — no direct `File`/`Dir`/`FileUtils`
+- Progress is transient — notify via Observable, don't persist to DB
+
 ### JavaScript
 - Stimulus controllers for all interactive behavior
-- ActionCable subscriptions managed through `channels/download_channel.js`
+- ActionCable subscriptions managed through channel JS modules
 - Importmap module names (not relative paths) for imports
 
 ## Testing
 
 ### Test Organization
-- `spec/models/` — model validations, scopes, methods
+- `spec/models/` — model validations, scopes, Observable behavior
 - `spec/commands/` — command execution, validation, context passing
 - `spec/services/` — service logic with mocked dependencies
 - `spec/adapters/` — adapter unit tests and integration tests (VCR)
 - `spec/jobs/` — job execution and edge cases
 - `spec/requests/` — HTTP endpoint integration
 - `spec/features/` — user flow tests (Rack::Test)
-- `spec/system/` — browser tests with Selenium (ActionCable, JS behavior)
+- `spec/system/` — browser tests with Selenium (ActionCable, progress bar, JS behavior)
+- `spec/e2e/` — end-to-end tests (full download lifecycle, CBZ verification, settings validation)
 
 ### Test Policies
 - External HTTP calls are mocked with WebMock
 - VCR cassettes for adapter integration tests
-- `ActionCable.server.broadcast` is stubbed in service specs
-- System specs use headless Chrome via Selenium
-- VCR allows localhost connections (`ignore_localhost = true`) for system tests
+- System and E2E specs use headless Chrome via Selenium with inline Sidekiq
+- VCR allows localhost connections (`ignore_localhost = true`) for browser tests
+- All specs that create downloads set `destination_root` to `Dir.mktmpdir` — never write to real folders
 
 ## Configuration
 
