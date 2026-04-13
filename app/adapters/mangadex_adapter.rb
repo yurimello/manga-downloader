@@ -7,16 +7,15 @@ class MangadexAdapter < BaseAdapter
   def search_manga(query, limit: 5, offset: 0, sort: "relevance", languages: nil)
     languages ||= LanguageConfig.codes
 
-    params = {
-      "title" => query,
-      "limit" => limit,
-      "offset" => offset,
-      "includes[]" => "cover_art",
-      "order[#{sort}]" => "desc",
-      "availableTranslatedLanguage[]" => languages
-    }
+    query_string = URI.encode_www_form([
+      ["title", query],
+      ["limit", limit],
+      ["offset", offset],
+      ["includes[]", "cover_art"],
+      ["order[#{sort}]", "desc"]
+    ] + languages.map { |l| ["availableTranslatedLanguage[]", l] })
 
-    data = @http.get_json("#{@base_url}/manga", params: params)
+    data = @http.get_json("#{@base_url}/manga?#{query_string}")
 
     results = (data["data"] || []).map do |manga|
       titles = manga.dig("attributes", "title") || {}
