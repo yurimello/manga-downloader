@@ -23,7 +23,7 @@ http_interactions:
       Cache-Control:
       - max-age=15, public, s-maxage=2592000, stale-while-revalidate=15
       Date:
-      - Sun, 12 Apr 2026 17:31:03 GMT
+      - Mon, 13 Apr 2026 23:23:53 GMT
       X-Cache:
       - MISS
       Accept-Ranges:
@@ -43,7 +43,7 @@ http_interactions:
       Via:
       - HTTP/1.1 NA-EAST-N1x1
       X-Request-Id:
-      - 0773d9c0-42b9-418d-aaa9-57ca41817c3e
+      - b51b9b32-b258-4ff6-b4db-8d814aed7e96
       Permissions-Policy:
       - fullscreen=(self)
       Referrer-Policy:
@@ -92,5 +92,5 @@ http_interactions:
         inesperadas, n\u00e3o apenas para si, mas tamb\u00e9m as pessoas que os cercam."},"isLocked":false,"links":{"al":"47353","ap":"a-girl-on-the-shore","kt":"4567","mu":"ihngnft","mal":"17353","raw":"https:\/\/kodansha.us\/series\/a-girl-on-the-shore\/"},"officialLinks":null,"originalLanguage":"ja","lastVolume":"2","lastChapter":"20","publicationDemographic":"seinen","status":"completed","year":2009,"contentRating":"erotica","tags":[{"id":"3b60b75c-a2d7-4860-ab56-05f391bb889c","type":"tag","attributes":{"name":{"en":"Psychological"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"423e2eae-a7a2-4a8b-ac03-a8351462d71d","type":"tag","attributes":{"name":{"en":"Romance"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"b1e97889-25b4-4258-b28b-cd7f4d28ea9b","type":"tag","attributes":{"name":{"en":"Philosophical"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"b9af3a63-f058-46de-a9a0-e0c13906197a","type":"tag","attributes":{"name":{"en":"Drama"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"caaa44eb-cd40-4177-b930-79d3ef2afe87","type":"tag","attributes":{"name":{"en":"School
         Life"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"da2d50ca-3018-4cc0-ac7a-6b7d472a29ea","type":"tag","attributes":{"name":{"en":"Delinquents"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"e5301a23-ebd9-49dd-a0cb-2add944c7fe9","type":"tag","attributes":{"name":{"en":"Slice
         of Life"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"f8f62932-27da-4fe4-8ee1-6779a8c5edba","type":"tag","attributes":{"name":{"en":"Tragedy"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-02-23T14:35:31+00:00","updatedAt":"2025-11-15T16:28:13+00:00","version":18,"availableTranslatedLanguages":["ru","es-la","vi","fa","en","pt-br"],"latestUploadedChapter":"ce941f8d-4b8f-443d-81c4-b1bba7df54fd"},"relationships":[{"id":"a5b9c82d-9cd3-41b8-ac46-6cb860d4e254","type":"author"},{"id":"a5b9c82d-9cd3-41b8-ac46-6cb860d4e254","type":"artist"},{"id":"fbe45ca8-c6e6-4fef-ae3a-f7d76f4b204b","type":"cover_art"}]}}'
-  recorded_at: Sun, 12 Apr 2026 17:31:04 GMT
+  recorded_at: Mon, 13 Apr 2026 23:23:53 GMT
 recorded_with: VCR 6.4.0
