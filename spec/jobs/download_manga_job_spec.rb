@@ -5,6 +5,8 @@ RSpec.describe DownloadMangaJob do
   let(:result) { instance_double(Interactor::Context, success?: true) }
 
   before do
+    Setting.store(:max_concurrent_processes, "1")
+    Setting.store(:destination_root, "/downloads")
     allow(AdapterRegistry).to receive(:for_url).and_return(instance_double(MangadexAdapter))
     allow(DownloadOrchestratorService).to receive(:call).and_return(result)
   end

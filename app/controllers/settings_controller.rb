@@ -1,7 +1,7 @@
 class SettingsController < ApplicationController
   def edit
-    @max_concurrent = Setting.fetch(:max_concurrent_processes, "1")
-    @destination_root = Setting.fetch(:destination_root, File.expand_path("~/Comics/Manga"))
+    @max_concurrent = Setting.fetch(:max_concurrent_processes)
+    @destination_root = Setting.fetch(:destination_root)
   end
 
   def update

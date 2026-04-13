@@ -6,7 +6,7 @@ class DownloadMangaJob
     download = Download.find(download_id)
     return if download.cancelled?
 
-    max = Setting.fetch(:max_concurrent_processes, "1").to_i
+    max = Setting.fetch(:max_concurrent_processes).to_i
     active = Download.where(status: [:downloading, :packing]).count
 
     if active >= max
