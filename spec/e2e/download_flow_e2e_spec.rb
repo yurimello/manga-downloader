@@ -179,40 +179,40 @@ RSpec.describe "Download E2E", type: :system do
   end
 
   describe "search and select manga", :js do
-    it "searches by title, selects result, and fills URL" do
+    it "searches by title, selects result, and fills URL", vcr: { cassette_name: "mangadex/search_magi", record: :new_episodes } do
       stub_chapters([
         { id: "ch1", chapter: "1", volume: "1", language: "en" }
       ])
       stub_images
 
-      # Use real adapter with WebMock stub (VCR cassettes don't span Puma threads)
+      # Use real adapter so VCR can intercept the HTTP call
       AdapterRegistry.instance.register(:mangadex,
         MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" }))
-
-      stub_request(:get, %r{https://api\.mangadex\.org/manga\?})
-        .to_return(status: 200, body: {
-          data: [
-            { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", attributes: { title: { en: "Magi" } }, relationships: [] },
-            { id: "abc-other", attributes: { title: { en: "Magic Knight Rayearth" } }, relationships: [] }
-          ],
-          total: 2
-        }.to_json, headers: { "Content-Type" => "application/json" })
 
       visit root_path
 
       find("[data-manga-search-target='input']").send_keys("Magi")
 
-      # Dropdown appears with results
-      expect(page).to have_css("[data-manga-search-target='results'] [data-action]", wait: 10)
+      # Dropdown renders with results
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_text("Magi", wait: 10)
+        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1)
+      end
 
       # Select first result from dropdown
       within "[data-manga-search-target='results']" do
         first("[data-action='click->manga-search#select']").click
       end
 
-      # URL input is filled
+      # Search input shows selected title
+      expect(find("[data-manga-search-target='input']").value).not_to be_empty
+
+      # URL input is filled with a MangaDex URL
       url_input = find("[data-manga-search-target='urlInput']")
-      expect(url_input.value).to include("mangadex.org/title/")
+      expect(url_input.value).to match(%r{mangadex\.org/title/})
+
+      # Dropdown is hidden after selection
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
     end
   end
 

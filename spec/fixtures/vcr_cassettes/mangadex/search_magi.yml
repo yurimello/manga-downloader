@@ -1,0 +1,164 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.mangadex.org/manga?availableTranslatedLanguage%5B%5D=en&availableTranslatedLanguage%5B%5D=es&availableTranslatedLanguage%5B%5D=es-la&availableTranslatedLanguage%5B%5D=fr&availableTranslatedLanguage%5B%5D=it&availableTranslatedLanguage%5B%5D=pt-br&includes%5B%5D=cover_art&limit=5&offset=0&order%5Brelevance%5D=desc&title=Magi
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=15, public, s-maxage=2592000, stale-while-revalidate=15
+      Date:
+      - Mon, 13 Apr 2026 23:34:39 GMT
+      X-Cache:
+      - MISS
+      Accept-Ranges:
+      - bytes
+      Transfer-Encoding:
+      - chunked
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - "*"
+      Vary:
+      - Origin
+      Md-Edge-Crs:
+      - Tk9ORQ
+      Server:
+      - MangaDex
+      Via:
+      - HTTP/1.1 NA-EAST-N1x1
+      X-Request-Id:
+      - d9793d21-a599-4816-a13f-e5e4764fd582
+      Permissions-Policy:
+      - fullscreen=(self)
+      Referrer-Policy:
+      - strict-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - DENY
+      Cross-Origin-Embedder-Policy:
+      - unsafe-none
+      Cross-Origin-Opener-Policy:
+      - same-origin-allow-popups
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Alt-Svc:
+      - h3=":443"; ma=86400
+      Md-Progressive-Rollout-Bucket:
+      - '1393955921'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result":"ok","response":"collection","data":[{"id":"ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43","type":"manga","attributes":{"title":{"en":"Magi"},"altTitles":[{"vi":"Magi
+        - M\u00ea Cung Th\u1ea7n Tho\u1ea1i"},{"es":"Magi: El Laberinto de la Mag\u00eda"},{"en":"Magi:
+        The Labyrinth of Magic"},{"zh":"MAGI\u9b54\u5947\u5c11\u5e74"},{"ru":"\u041c\u0430\u0433\u0438
+        - \u041b\u0430\u0431\u0438\u0440\u0438\u043d\u0442 \u0412\u043e\u043b\u0448\u0435\u0431\u0441\u0442\u0432\u0430"},{"ar":"\u0645\u0627\u062c\u064a:
+        \u0645\u062a\u0627\u0647\u0629 \u0627\u0644\u0633\u062d\u0631"},{"fa":"\u0645\u0627\u06af\u06cc:
+        \u067e\u06cc\u0686\u0627\u0644 \u062c\u0627\u062f\u0648"},{"th":"\u0e40\u0e21\u0e44\u0e08"},{"ja":"\u30de\u30ae"},{"ko":"\ub9c8\uae30"}],"description":{"en":"Deep
+        within the deserts lie the mysterious Dungeons, vast stores of riches open
+        for the taking by anyone lucky enough to find them \nand brave enough to venture
+        into the depths from where few have ever returned. \nPlucky young adventurer
+        Aladdin means to find the Dungeons and their riches, but he may be just as
+        mysterious as the treasures he seeks. \nTogether with the Djinn Ugo and his
+        friend Alibaba, Aladdin sets out to find his fortune in the depths of the
+        endless dunes.  \n  \n**59th Shogakukan Manga Award winner in the Shounen
+        category**","es":"En lo profundo de los desiertos se encuentran las misteriosas
+        mazmorras, vastos dep\u00f3sitos de riquezas abiertos para que los tome cualquiera
+        que tenga la suerte de encontrarlos y el coraje de aventurarse en las profundidades
+        de donde pocos han regresado. El joven y valiente aventurero Aladino quiere
+        encontrar las mazmorras y sus riquezas, pero Aladino puede ser tan misterioso
+        como los tesoros que busca. Junto con el Djinn Ugo y su amigo, Alibaba, Aladino
+        se propone encontrar su fortuna en las profundidades de las dunas interminables.  \n  \nGan\u00f3
+        el 59\u00ba Premio Shogakukan Manga en la categor\u00eda Shounen.","pt":"Essa
+        hist\u00f3ria \u00e9 sobre o fluxo do destino e da batalha para manter o mundo
+        no caminho certo. Aladdin \u00e9 um garoto que tem a inten\u00e7\u00e3o de
+        explorar o mundo depois de ficar preso em uma sala na maior parte de sua vida.
+        Seu melhor amigo \u00e9 uma flauta com um djinn nele, chamado Ugo. Pouco tempo
+        depois, Aladdin descobre que ele \u00e9 um Magi, um mago que escolhe os reis,
+        e ele nasceu para escolher reis que v\u00e3o seguir o caminho justo, lutando
+        contra aqueles que querem destruir o destino. Siga suas aventuras de como
+        ele conhece os outros contos de \"Mil e Uma Noites\", como Ali Bab\u00e1 e
+        Sinbad, e a luta para manter o equil\u00edbrio do mundo que est\u00e1 em cheque!","ru":"\u0410\u043b\u043b\u0430\u0434\u0438\u043d
+        \u043f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0443\u0435\u0442 \u043f\u043e
+        \u0442\u0430\u0438\u043d\u0441\u0442\u0432\u0435\u043d\u043d\u043e\u043c\u0443
+        \u043a\u043e\u043d\u0442\u0438\u043d\u0435\u043d\u0442\u0443 \u043d\u0430
+        \u043a\u043e\u0442\u043e\u0440\u043e\u043c \u043d\u0430\u0445\u043e\u0434\u044f\u0442\u0441\u044f
+        \u0440\u0443\u0438\u043d\u044b, \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044b\u0435
+        \u043a\u0430\u043a, \"Dungeon\", \u0441\u0447\u0438\u0442\u0430\u0435\u0442\u0441\u044f,
+        \u0447\u0442\u043e \u0432 \u043d\u0438\u0445 \u0441\u043a\u0440\u044b\u0442\u044b
+        \u0441\u043e\u043a\u0440\u043e\u0432\u0438\u0449\u0430. \u0412\u043e \u0432\u0440\u0435\u043c\u044f
+        \u0441\u0432\u043e\u0435\u0433\u043e \u043f\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0438\u044f
+        \u0410\u043b\u043b\u0430\u0434\u0438\u043d \u0432\u0441\u0442\u0440\u0435\u0447\u0430\u0435\u0442
+        \u0410\u043b\u0438-\u0411\u0430\u0431\u0443, \u0438 \u0432\u043c\u0435\u0441\u0442\u0435
+        \u043e\u043d\u0438 \u043f\u044b\u0442\u0430\u044e\u0442\u0441\u044f \u043d\u0430\u0439\u0442\u0438
+        \u0441\u043f\u0440\u044f\u0442\u0430\u043d\u043d\u044b\u0435 \u0441\u043e\u043a\u0440\u043e\u0432\u0438\u0449\u0430.
+        \u042d\u0442\u0438 \u043f\u043e\u0438\u0441\u043a\u0438 \u043f\u0440\u0438\u043d\u043e\u0441\u044f\u0442
+        \u0438\u043c \u043d\u043e\u0432\u044b\u0435 \u0432\u0441\u0442\u0440\u0435\u0447\u0438
+        \u0438 \u0440\u0430\u0441\u0441\u0442\u0430\u0432\u0430\u043d\u0438\u044f.
+        \u041c\u043d\u043e\u0433\u043e\u0435 \u043f\u0440\u0438\u0434\u0435\u0442\u0441\u044f
+        \u043f\u0440\u043e\u0439\u0442\u0438, \u0410\u043b\u043b\u0430\u0434\u0438\u043d\u0443,
+        \u0447\u0442\u043e\u0431\u044b \u0443\u0437\u043d\u0430\u0442\u044c \u0441\u0432\u043e\u0435
+        \u0438\u0441\u0442\u0438\u043d\u043d\u043e\u0435 \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0435.
+        \u041e\u0441\u043d\u043e\u0432\u0430\u043d\u043e \u043d\u0430 \u0441\u043a\u0430\u0437\u043a\u0430\u0445
+        \"\u0422\u044b\u0441\u044f\u0447\u0430 \u0438 \u043e\u0434\u043d\u0430 \u043d\u043e\u0447\u044c\"."},"isLocked":false,"links":{"al":"44790","ap":"magi","bw":"series\/129077\/list","kt":"25108","mu":"bitghgl","mal":"14790","raw":"https:\/\/www.comico.jp\/magazine_comic\/127873"},"officialLinks":null,"originalLanguage":"ja","lastVolume":"37","lastChapter":"369","publicationDemographic":"shounen","status":"completed","year":2009,"contentRating":"suggestive","tags":[{"id":"0a39b5a1-b235-4886-a747-1d05d216532d","type":"tag","attributes":{"name":{"en":"Award
+        Winning"},"description":{},"group":"format","version":1},"relationships":[]},{"id":"391b0423-d847-456f-aff0-8b0cfc03066b","type":"tag","attributes":{"name":{"en":"Action"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"4d32cc48-9f00-4cca-9b5a-a839f0764984","type":"tag","attributes":{"name":{"en":"Comedy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"87cc87cd-a395-47af-b27a-93258283bbc6","type":"tag","attributes":{"name":{"en":"Adventure"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"a1f53773-c69a-4ce5-8cab-fffcd90b1565","type":"tag","attributes":{"name":{"en":"Magic"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"cdc58593-87dd-415e-bbc0-2ec27bf404cc","type":"tag","attributes":{"name":{"en":"Fantasy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"ee968100-4191-4968-93d3-f82d72be7e46","type":"tag","attributes":{"name":{"en":"Mystery"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-02-02T14:07:38+00:00","updatedAt":"2025-12-04T16:33:19+00:00","version":11,"availableTranslatedLanguages":["en","pt-br","ru","es-la","es"],"latestUploadedChapter":"7f81b548-703e-4929-820d-0b5c1918b10e"},"relationships":[{"id":"021c43c2-8bcb-4995-8054-b691510c94a3","type":"author"},{"id":"021c43c2-8bcb-4995-8054-b691510c94a3","type":"artist"},{"id":"b53eb7c0-9b67-4f15-a9f6-8c238367a497","type":"cover_art","attributes":{"description":"","volume":null,"fileName":"fce98983-acb7-44f1-b6aa-ceba6a569ba9.jpg","locale":"ja","createdAt":"2021-05-24T18:38:13+00:00","updatedAt":"2021-05-24T18:38:13+00:00","version":1}},{"id":"17be3917-f5c5-4634-83da-9c698caa3b8c","type":"manga","related":"doujinshi"},{"id":"1eff6a35-4423-477e-98df-a4e23f2b4386","type":"manga","related":"doujinshi"},{"id":"21a5ae7a-8b80-4f0d-bb2a-046a20c2fd8a","type":"manga","related":"doujinshi"},{"id":"3d7d87d1-590c-4537-93be-de1cbf6e539b","type":"manga","related":"doujinshi"},{"id":"52748547-0da2-4869-8d18-39ce9fff45d9","type":"manga","related":"doujinshi"},{"id":"598b9a10-126c-4807-9ed2-c1651acb3327","type":"manga","related":"doujinshi"},{"id":"77eb609f-d789-46c3-a6a9-81ca8c15f945","type":"manga","related":"doujinshi"},{"id":"a5e868f4-e564-43a5-ace6-38010cb2b73f","type":"manga","related":"doujinshi"},{"id":"aadbdeaa-5a49-4e4e-b5f7-1cd255c9599b","type":"manga","related":"doujinshi"},{"id":"ac54cf12-1d69-4bcc-8d14-eaec4b4da6b1","type":"manga","related":"side_story"},{"id":"cbf25cd3-aef7-4021-b3ba-3d32af2be7cb","type":"manga","related":"doujinshi"},{"id":"f7f5eb88-fd6e-477d-801d-536e78790220","type":"manga","related":"doujinshi"}]},{"id":"8a3d1761-407e-4929-bf7f-1cdc15758470","type":"manga","attributes":{"title":{"en":"Rental
+        Magica from SOLOMON"},"altTitles":[{"ja-ro":"Rentaru Magika from Solomon"},{"ja":"\u30ec\u30f3\u30bf\u30eb\u30de\u30ae\u30ab
+        from SOLOMON"},{"ja":"\u30ec\u30f3\u30bf\u30eb\u30de\u30ae\u30abfrom SOLOMON"},{"en":"Rental
+        Magika from SOLOMON"}],"description":{"en":"Due to his father''s disappearance,
+        Itsuki Iba at a young age has to take over the family business: Astral Rental
+        Magica, a magician dispatch service. A Rental Magica company employs magicians
+        and other supernatural beings in order to hire them out to those who need
+        magical assistance.  \n  \nInheriting the leadership position of Astral, Itsuki
+        now has to be tough, commanding, and reliable, but there''s one problem: he''s
+        a coward. His personality also doesn''t help him connect with his employees
+        or face those who threaten the family business\u2013and some of the latter
+        are supernaturally powerful and quite dangerous.\n\nWikipedia\n[Chinese (Traditional)](https:\/\/zh.wikipedia.org\/wiki\/%E9%AD%94%E6%B3%95%E4%BA%BA%E5%8A%9B%E6%B4%BE%E9%81%A3%E5%85%AC%E5%8F%B8)\n[English](https:\/\/en.wikipedia.org\/wiki\/Rental_Magica)\n[Indonesian](https:\/\/id.wikipedia.org\/wiki\/Rental_Magica)\n[Italian](https:\/\/it.wikipedia.org\/wiki\/Rental_Magica)\n[Japanese](https:\/\/ja.wikipedia.org\/wiki\/%E3%83%AC%E3%83%B3%E3%82%BF%E3%83%AB%E3%83%9E%E3%82%AE%E3%82%AB)\n[Polish](https:\/\/pl.wikipedia.org\/wiki\/Rental_Magica)\n[Russian](https:\/\/pl.wikipedia.org\/wiki\/Rental_Magica)\n[Spanish](https:\/\/es.wikipedia.org\/wiki\/Rental_Magica)\n[Vietnamese](https:\/\/vi.wikipedia.org\/wiki\/Rental_Magica)\n\nThe
+        Doujinshi & Manga Lexicon\n[Vol. 1](https:\/\/www.doujinshi.org\/book\/241874\/)"},"isLocked":false,"links":{"al":"38142","ap":"rental-magica-from-solomon","kt":"16623","mu":"q1ciyr0","mal":"8142"},"officialLinks":null,"originalLanguage":"ja","lastVolume":"2","lastChapter":"","publicationDemographic":"shounen","status":"completed","year":2007,"contentRating":"safe","tags":[{"id":"391b0423-d847-456f-aff0-8b0cfc03066b","type":"tag","attributes":{"name":{"en":"Action"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"4d32cc48-9f00-4cca-9b5a-a839f0764984","type":"tag","attributes":{"name":{"en":"Comedy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"cdc58593-87dd-415e-bbc0-2ec27bf404cc","type":"tag","attributes":{"name":{"en":"Fantasy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"eabc5b4c-6aff-42f3-b657-3e90cbd00b75","type":"tag","attributes":{"name":{"en":"Supernatural"},"description":{},"group":"theme","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-07-13T09:35:58+00:00","updatedAt":"2025-11-15T20:11:08+00:00","version":9,"availableTranslatedLanguages":["en"],"latestUploadedChapter":"ad6c783d-3f5c-4810-9362-d5cb9f2c8914"},"relationships":[{"id":"e5230212-fef3-4c94-bea8-51a51b08e1b5","type":"author"},{"id":"1bc56f9e-d62e-4e47-9798-baf2b0b37e58","type":"artist"},{"id":"08568e6c-1369-4fbc-8679-97a3ec48eb3a","type":"cover_art","attributes":{"description":"","volume":"2","fileName":"83b11e5a-4ec7-4302-80e7-d4da33bdfc37.jpg","locale":"ja","createdAt":"2021-05-24T18:40:50+00:00","updatedAt":"2022-07-02T02:18:11+00:00","version":2}},{"id":"a70894bf-f084-451a-93e4-60cd6e109638","type":"manga","related":"alternate_story"}]},{"id":"c5c17680-ba00-40b5-a58e-cbce584fa490","type":"manga","attributes":{"title":{"en":"Magia
+        Record: Puella Magi Madoka\u2605Magica Side Story - The Lost Reincarnation
+        (Doujinshi)"},"altTitles":[{"ja":"\u8f2a\u5efb\u306e\u679c\u3066\u306e\u795e\u6d5c\u3067
+        (\u30de\u30ae\u30a2\u30ec\u30b3\u30fc\u30c9 \u9b54\u6cd5\u5c11\u5973\u307e\u3069\u304b\u2606\u30de\u30ae\u30ab\u5916\u4f1d)"},{"ja-ro":"Rinne
+        no Hate no Kamihama de (Magia Record: Mahou Shoujo Madoka Magica Side Story)"}],"description":{"en":"Trying
+        to prevent Madoka''s untimely end, Homura decides to go to Kamihama City and
+        ask the magical girls there for assistance. There she finds that Kamihama''s
+        magical girls are facing just as much of a crisis as she is thanks to Alina
+        Gray. Will Homura be able to save both Madoka and her allies?"},"isLocked":false,"links":{"raw":"https:\/\/www.pixiv.net\/en\/artworks\/94955514"},"officialLinks":null,"originalLanguage":"ja","lastVolume":"2","lastChapter":"1","publicationDemographic":null,"status":"completed","year":2021,"contentRating":"safe","tags":[{"id":"292e862b-2d17-4062-90a2-0356caa4ae27","type":"tag","attributes":{"name":{"en":"Time
+        Travel"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"391b0423-d847-456f-aff0-8b0cfc03066b","type":"tag","attributes":{"name":{"en":"Action"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"3b60b75c-a2d7-4860-ab56-05f391bb889c","type":"tag","attributes":{"name":{"en":"Psychological"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"81c836c9-914a-4eca-981a-560dad663e73","type":"tag","attributes":{"name":{"en":"Magical
+        Girls"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"a1f53773-c69a-4ce5-8cab-fffcd90b1565","type":"tag","attributes":{"name":{"en":"Magic"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"b13b2a48-c720-44a9-9c77-39c9979373fb","type":"tag","attributes":{"name":{"en":"Doujinshi"},"description":{},"group":"format","version":1},"relationships":[]},{"id":"b9af3a63-f058-46de-a9a0-e0c13906197a","type":"tag","attributes":{"name":{"en":"Drama"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"cdc58593-87dd-415e-bbc0-2ec27bf404cc","type":"tag","attributes":{"name":{"en":"Fantasy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"eabc5b4c-6aff-42f3-b657-3e90cbd00b75","type":"tag","attributes":{"name":{"en":"Supernatural"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"f5ba408b-0e7a-484d-8d49-4e9125ac96de","type":"tag","attributes":{"name":{"en":"Full
+        Color"},"description":{},"group":"format","version":1},"relationships":[]},{"id":"f8f62932-27da-4fe4-8ee1-6779a8c5edba","type":"tag","attributes":{"name":{"en":"Tragedy"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2023-03-21T16:37:55+00:00","updatedAt":"2024-10-22T09:12:35+00:00","version":7,"availableTranslatedLanguages":["en"],"latestUploadedChapter":"3787a1aa-8838-4a59-bb07-e9da8bca33ed"},"relationships":[{"id":"7b811992-7798-4e2e-a174-429f69445269","type":"author"},{"id":"0b9cfd38-e3c9-4ace-8b3f-4a268770c4f9","type":"artist"},{"id":"f6f41e14-d4b7-43fc-9ab2-78c81cc24c3d","type":"artist"},{"id":"cb8abe50-7687-421d-8ce6-e7dbae0c0d65","type":"cover_art","attributes":{"description":"","volume":"2","fileName":"74a32a4f-7641-4169-896a-dfe994d8d970.jpg","locale":"ja","createdAt":"2024-10-22T09:10:06+00:00","updatedAt":"2024-10-22T09:10:06+00:00","version":1}},{"id":"88f30588-a88c-4934-8274-79eb1851d569","type":"manga","related":"based_on"},{"id":"675db2f6-ac41-4ce6-8e63-df7dcaedaa4a","type":"creator"}]},{"id":"b0054c84-b001-47ea-a20e-fdf06aa944d6","type":"manga","attributes":{"title":{"en":"Watashi
+        ga Motenai no wa Dou Kangaetemo Omaera ga Warui! - There''s Slope Magic (Doujinshi)"},"altTitles":[{"en":"Motenai
+        shi Gelande Magic Ru"},{"en":"\u30e2\u30c6\u306a\u3044\u3057\u30b2\u30ec\u30f3\u30c7\u30de\u30b8\u30c3\u30af\u308b"}],"description":{"en":""},"isLocked":false,"links":null,"officialLinks":null,"originalLanguage":"ja","lastVolume":null,"lastChapter":null,"publicationDemographic":null,"status":"ongoing","year":null,"contentRating":"safe","tags":[{"id":"4d32cc48-9f00-4cca-9b5a-a839f0764984","type":"tag","attributes":{"name":{"en":"Comedy"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"b13b2a48-c720-44a9-9c77-39c9979373fb","type":"tag","attributes":{"name":{"en":"Doujinshi"},"description":{},"group":"format","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2020-05-26T10:04:01+00:00","updatedAt":"2021-05-25T15:46:34+00:00","version":2,"availableTranslatedLanguages":["en"],"latestUploadedChapter":"7a9bf804-79ab-41e9-b2f1-f8fe626f7fb6"},"relationships":[{"id":"9b800ffe-f3bd-4c36-a8aa-bf32a8918ddd","type":"author"},{"id":"f73e98dc-3e87-4999-8255-fb7c410d87e7","type":"author"},{"id":"9b800ffe-f3bd-4c36-a8aa-bf32a8918ddd","type":"artist"},{"id":"f73e98dc-3e87-4999-8255-fb7c410d87e7","type":"artist"},{"id":"bbf62ce4-4d10-4fcb-9b46-003b49d07faa","type":"cover_art","attributes":{"description":"","volume":null,"fileName":"f442bd85-cd11-4754-8da1-3b2c398e4034.jpg","locale":"ja","createdAt":"2021-05-24T17:57:15+00:00","updatedAt":"2021-05-24T17:57:15+00:00","version":1}},{"id":"e182b09f-09ab-4201-8f37-0ced6822eb39","type":"manga","related":"based_on"}]},{"id":"879ce2f1-a8da-47ed-b70b-5483f98f774e","type":"manga","attributes":{"title":{"en":"Arcana
+        07 - Wizard \/ Magician"},"altTitles":[{"en":"Arcana - Mahoutsukai \/ Jutsushi"},{"en":"Arcana
+        - Wizard and Magician"},{"en":"Arcana 07: Wizard and Magician"},{"en":"Arcana
+        7"},{"en":"Forest\u2019s Poison"},{"en":"Good Day For Me"},{"en":"Kashoku"},{"en":"Kawahori"},{"en":"\u30bc\u30ed\u30b5\u30e0\u30aa\u30ea\u30b8\u30ca\u30eb\u30a2\u30f3\u30bd\u30ed\u30b8\u30fc\u30b7\u30ea\u30fc\u30ba
+        Arcana (7) [\u9b54\u6cd5\u4f7f\u3044\uff0f\u8853\u5e2b]"}],"description":{"en":"Volume
+        7 : Wizard and Magician  \n  \n  \n1. Kawahori the Word Man by D. Kissan  \n  \n2.
+        Night bird by Kouzuki Reo  \n  \n3. Mushroom and Kappa - Magic Users\u2019
+        Chapter by Magami Guriko  \n  \n4. Good Day For Me by Omote Sora  \n  \n5.
+        Love Coloured Glasses by Bikke  \n  \n6. The Kind Black Witch by Ueda Shinshuu  \n  \n7.
+        The Magician and I by Mikawa Verno  \n  \n8. Kokonoe Kyuujutsu by Aoto Takane  \n  \n9.
+        Forest\u2019s Poison by Kumeta Natsuo  \n  \n10. The Witch and I by Saeki
+        Yashiro  \n  \n11. Kashoku by Kayase Shiki  \n  \n12. Magical Girl Alice and
+        Her Brother by Igarashi Ran  \n  \n13. Magic! by Mizuhara Kenta  \n  \n14.
+        The Kind Magician and the Paper Bag Girl by MIZUTANI Yuzu & KAEDE Tohru  \n  \n15.
+        Secret Service by Suzuki Ichiko"},"isLocked":false,"links":{},"officialLinks":null,"originalLanguage":"ja","lastVolume":"","lastChapter":"","publicationDemographic":"josei","status":"completed","year":null,"contentRating":"safe","tags":[{"id":"51d83883-4103-437c-b4b1-731cb73d786c","type":"tag","attributes":{"name":{"en":"Anthology"},"description":{},"group":"format","version":1},"relationships":[]},{"id":"a1f53773-c69a-4ce5-8cab-fffcd90b1565","type":"tag","attributes":{"name":{"en":"Magic"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"b9af3a63-f058-46de-a9a0-e0c13906197a","type":"tag","attributes":{"name":{"en":"Drama"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"cdc58593-87dd-415e-bbc0-2ec27bf404cc","type":"tag","attributes":{"name":{"en":"Fantasy"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-04-19T09:34:39+00:00","updatedAt":"2022-08-29T01:37:44+00:00","version":4,"availableTranslatedLanguages":["pt-br","en","fr","it"],"latestUploadedChapter":"938c4c67-b062-4440-a46b-2c6ffbc49b5e"},"relationships":[{"id":"01305080-422b-4d2b-85f8-adf93b916f5d","type":"author"},{"id":"0a4cc1e2-a49d-434d-901d-e92c2e68b0a2","type":"author"},{"id":"0ba6755b-df00-4e4f-9d5c-9e17b45978ab","type":"author"},{"id":"434f6938-1459-437b-b763-e32c5a68c6f6","type":"author"},{"id":"4c5c1e78-4fa5-46cd-a329-a33d56223635","type":"author"},{"id":"5414d89c-3ffc-4cf5-ace3-4cc6399acf40","type":"author"},{"id":"62b6dba5-eeb3-41f3-a49b-8b1344549e38","type":"author"},{"id":"6ccf732b-fa77-4c40-a163-c80df7e58183","type":"author"},{"id":"74396a27-2bfa-44a9-b5cd-758c2b3574c7","type":"author"},{"id":"90ecb9ab-1065-4970-bd69-093229523947","type":"author"},{"id":"994afd30-af0d-404a-a2b7-415f8f0eab1b","type":"author"},{"id":"a5c5bd9f-3804-4772-9469-8aba2477a2f9","type":"author"},{"id":"e36dd543-1484-4975-ad31-c2707752a176","type":"author"},{"id":"fc216f23-181c-4fd3-8f18-0c946c39a949","type":"author"},{"id":"01305080-422b-4d2b-85f8-adf93b916f5d","type":"artist"},{"id":"0a4cc1e2-a49d-434d-901d-e92c2e68b0a2","type":"artist"},{"id":"0ba6755b-df00-4e4f-9d5c-9e17b45978ab","type":"artist"},{"id":"434f6938-1459-437b-b763-e32c5a68c6f6","type":"artist"},{"id":"4c5c1e78-4fa5-46cd-a329-a33d56223635","type":"artist"},{"id":"5414d89c-3ffc-4cf5-ace3-4cc6399acf40","type":"artist"},{"id":"62b6dba5-eeb3-41f3-a49b-8b1344549e38","type":"artist"},{"id":"6ccf732b-fa77-4c40-a163-c80df7e58183","type":"artist"},{"id":"74396a27-2bfa-44a9-b5cd-758c2b3574c7","type":"artist"},{"id":"90ecb9ab-1065-4970-bd69-093229523947","type":"artist"},{"id":"994afd30-af0d-404a-a2b7-415f8f0eab1b","type":"artist"},{"id":"a5c5bd9f-3804-4772-9469-8aba2477a2f9","type":"artist"},{"id":"e36dd543-1484-4975-ad31-c2707752a176","type":"artist"},{"id":"fc216f23-181c-4fd3-8f18-0c946c39a949","type":"artist"},{"id":"0ef4fac0-c829-4f22-bda1-e1a546ad0e84","type":"cover_art","attributes":{"description":"","volume":null,"fileName":"4d499df1-e885-4ef3-8462-95fc6cfabdd3.jpg","locale":"ja","createdAt":"2021-05-24T17:53:53+00:00","updatedAt":"2021-05-24T17:53:53+00:00","version":1}},{"id":"1b9f894f-58c1-4fb2-8205-fccccda8859c","type":"manga","related":"same_franchise"}]}],"limit":5,"offset":0,"total":960}'
+  recorded_at: Mon, 13 Apr 2026 23:34:39 GMT
+recorded_with: VCR 6.4.0

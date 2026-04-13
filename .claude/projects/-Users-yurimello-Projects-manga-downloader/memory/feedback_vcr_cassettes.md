@@ -1,16 +1,15 @@
 ---
-name: VCR cassettes on E2E failure
-description: When E2E tests fail, delete and re-record VCR cassettes before debugging further
+name: Always VCR, never WebMock for API stubs
+description: Use VCR cassettes for all external API stubs. Flush cassettes before running E2E tests.
 type: feedback
 ---
 
-When E2E or integration tests fail, flush VCR cassettes first and re-record them.
+ALWAYS use VCR cassettes instead of WebMock for external API stubs. WebMock creates false positives — it returns data regardless of actual query params.
 
-**Why:** Cassettes become stale when API params change (new fields, sort order, languages filter). Stale cassettes cause silent mismatches that are hard to debug.
+**Why:** WebMock stubs don't validate the request params match what the code actually sends. VCR records real API responses tied to exact request URLs.
 
-**How to apply:** Before investigating E2E failures, run:
-```bash
-rm spec/fixtures/vcr_cassettes/mangadex/*.yml
-bundle exec rspec spec/adapters/mangadex_adapter_integration_spec.rb
-```
-Then re-run the failing spec. If it still fails, the issue is in the code, not the cassette.
+**How to apply:**
+1. Before running E2E tests, flush cassettes: `rm spec/fixtures/vcr_cassettes/mangadex/*.yml`
+2. Re-record: `bundle exec rspec spec/adapters/mangadex_adapter_integration_spec.rb`
+3. Then run E2E tests
+4. For system tests where VCR cassettes don't span Puma threads, this is the one exception where WebMock is acceptable — but document why.
