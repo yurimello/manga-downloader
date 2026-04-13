@@ -77,6 +77,22 @@ end
 ### Adapter Pattern
 Source-specific logic (fetching manga from MangaDex, etc.) lives in adapters (`app/adapters/`). All adapters implement the same interface defined in `BaseAdapter`. New sources are added via config, not code changes to existing files.
 
+### Observer Pattern
+Steps and commands must never call ActionCable directly. Use observers to decouple broadcasting from business logic. Both `ServicePipeline` and `CommandChain` accept `observers:`.
+
+```ruby
+# Good — step notifies observer, observer handles ActionCable
+notify_status_changed
+
+# Bad — step calls ActionCable directly
+ActionCable.server.broadcast("download_#{download.id}", { ... })
+```
+
+Observers extend `ContextObserver` and implement:
+- `on_status_changed(context)` — download status changed
+- `on_progress_updated(context)` — image download progress
+- `on_error(context, error)` — pipeline error occurred
+
 ## Code Style
 
 ### Controllers

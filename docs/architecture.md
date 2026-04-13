@@ -18,6 +18,7 @@ app/
 ├── adapters/          # Source-specific manga fetchers (adapter pattern)
 ├── channels/          # ActionCable WebSocket channels
 ├── commands/          # User action handlers (command pattern + chain)
+├── observers/         # Observer pattern (ActionCable broadcasting)
 ├── controllers/       # HTTP request handlers
 ├── javascript/
 │   ├── channels/      # ActionCable JS subscriptions
@@ -85,19 +86,26 @@ New sources are added by:
 
 The registry auto-loads adapters on Rails boot via `config/initializers/source_adapters.rb`.
 
-## Real-time Updates
+## Observer Pattern (Real-time Updates)
+
+Steps and commands never touch ActionCable directly. Instead, they notify observers via `notify_status_changed` and `notify_progress_updated`. The `DownloadBroadcastObserver` handles all ActionCable broadcasting.
 
 ```
-Server (Ruby)                          Client (JS)
-─────────────                          ────────────
-DownloadOrchestratorService            ProgressController (Stimulus)
-  → ActionCable.server.broadcast()       → subscribeToDownload()
-     "download_#{id}"                       DownloadChannel (consumer)
-                                              ↓
-Broadcast types:                       Message handlers:
-  status_changed  ──────────────────→  handleStatus()  → updates title/status text
-  progress_updated ─────────────────→  updateProgress() → updates bar + percentage
-  log_added ────────────────────────→  appendLog()     → appends to log panel
+Steps notify observers                 Observer broadcasts             Client (JS)
+────────────────────                   ───────────────────             ────────────
+notify_status_changed  ──────────→  DownloadBroadcastObserver  ──→  ProgressController
+notify_progress_updated ─────────→    .on_status_changed()          handleStatus()
+                                      .on_progress_updated()        updateProgress()
+                                      .on_error()                   appendLog()
 ```
+
+```
+app/
+├── observers/
+│   ├── context_observer.rb              # Base class (interface)
+│   └── download_broadcast_observer.rb   # ActionCable implementation
+```
+
+Both `ServicePipeline` and `CommandChain` accept `observers:` — the observer pattern works across services and commands.
 
 Cable config: Redis in development/production, async in test.

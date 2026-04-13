@@ -86,7 +86,7 @@ RSpec.describe CommandChain do
         end
       end
 
-      chain = described_class.new([reader], input: 42).call
+      chain = described_class.new([reader], { input: 42 }).call
 
       expect(chain).to be_success
       expect(chain.result).to eq(42)

@@ -1,6 +1,7 @@
 class BaseStep
-  def initialize(context)
+  def initialize(context, observers: [])
     @context = context
+    @observers = observers
   end
 
   def call
@@ -17,24 +18,11 @@ class BaseStep
     download.log!(message, level: level)
   end
 
-  def broadcast_status
-    ActionCable.server.broadcast("download_#{download.id}", {
-      type: "status_changed",
-      download_id: download.id,
-      status: download.status,
-      title: download.title,
-      progress: download.progress,
-      error_message: download.error_message
-    })
+  def notify_status_changed
+    @observers.each { |o| o.on_status_changed(@context) }
   end
 
-  def broadcast_progress(downloaded, total)
-    ActionCable.server.broadcast("download_#{download.id}", {
-      type: "progress_updated",
-      download_id: download.id,
-      progress: download.progress,
-      downloaded_images: downloaded,
-      total_images: total
-    })
+  def notify_progress_updated
+    @observers.each { |o| o.on_progress_updated(@context) }
   end
 end

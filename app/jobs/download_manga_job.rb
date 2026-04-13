@@ -22,7 +22,8 @@ class DownloadMangaJob
       adapter: adapter,
       selector: ChapterSelectorService.new,
       downloader: ImageDownloaderService.new(adapter: adapter),
-      packer: CbzPackerService.new
+      packer: CbzPackerService.new,
+      observers: [DownloadBroadcastObserver.new]
     ).call
   end
 end

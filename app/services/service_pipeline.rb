@@ -1,9 +1,10 @@
 class ServicePipeline
   attr_reader :context, :error
 
-  def initialize(steps, context = {})
+  def initialize(steps, context = {}, observers: [])
     @steps = steps
     @context = context
+    @observers = observers
     @error = nil
   end
 
@@ -11,9 +12,10 @@ class ServicePipeline
     @steps.each do |step|
       break if cancelled?
 
-      step.new(@context).call
+      step.new(@context, observers: @observers).call
     rescue => e
       @error = e
+      notify(:on_error, e)
       break
     end
 
@@ -25,6 +27,10 @@ class ServicePipeline
   end
 
   private
+
+  def notify(event, *args)
+    @observers.each { |o| o.public_send(event, @context, *args) }
+  end
 
   def cancelled?
     download = @context[:download]

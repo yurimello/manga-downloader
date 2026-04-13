@@ -1,9 +1,10 @@
 class CommandChain
   attr_reader :result, :errors, :context
 
-  def initialize(commands, context = {})
+  def initialize(commands, context = {}, observers: [])
     @commands = commands
     @context = context
+    @observers = observers
     @errors = []
     @result = nil
   end
@@ -16,6 +17,7 @@ class CommandChain
 
       unless command.success?
         @errors.concat(command.errors)
+        notify(:on_error, StandardError.new(@errors.join(", ")))
         break
       end
     end
@@ -25,5 +27,11 @@ class CommandChain
 
   def success?
     @errors.empty?
+  end
+
+  private
+
+  def notify(event, *args)
+    @observers.each { |o| o.public_send(event, @context, *args) }
   end
 end

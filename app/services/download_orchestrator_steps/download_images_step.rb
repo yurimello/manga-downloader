@@ -32,7 +32,9 @@ module DownloadOrchestratorSteps
           downloaded_images += 1
           progress = total_images > 0 ? ((downloaded_images.to_f / total_images) * 100).to_i : 0
           download.update!(progress: progress)
-          broadcast_progress(downloaded_images, total_images)
+          @context[:downloaded_images] = downloaded_images
+          @context[:total_images] = total_images
+          notify_progress_updated
         end
 
         volume_stats[ch[:volume]][:chapters] += 1

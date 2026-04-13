@@ -16,7 +16,8 @@ RSpec.describe DownloadMangaJob do
         adapter: anything,
         selector: a_kind_of(ChapterSelectorService),
         downloader: a_kind_of(ImageDownloaderService),
-        packer: a_kind_of(CbzPackerService)
+        packer: a_kind_of(CbzPackerService),
+        observers: [a_kind_of(DownloadBroadcastObserver)]
       )
       expect(orchestrator).to have_received(:call)
     end

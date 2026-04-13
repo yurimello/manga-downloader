@@ -16,7 +16,7 @@ module DownloadOrchestratorSteps
       end
 
       download.update!(status: :completed, progress: 100, completed_at: Time.current)
-      broadcast_status
+      notify_status_changed
       log!("Done! Files saved to: #{File.join(Setting.fetch(:destination_root, '/downloads'), @context[:title])}")
     end
   end

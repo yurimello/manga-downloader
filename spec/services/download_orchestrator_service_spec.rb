@@ -6,6 +6,7 @@ RSpec.describe DownloadOrchestratorService do
   let(:selector) { ChapterSelectorService.new }
   let(:downloader) { ImageDownloaderService.new(adapter: adapter) }
   let(:packer) { CbzPackerService.new }
+  let(:observer) { DownloadBroadcastObserver.new }
 
   let(:service) do
     described_class.new(
@@ -13,7 +14,8 @@ RSpec.describe DownloadOrchestratorService do
       adapter: adapter,
       selector: selector,
       downloader: downloader,
-      packer: packer
+      packer: packer,
+      observers: [observer]
     )
   end
 
@@ -60,7 +62,7 @@ RSpec.describe DownloadOrchestratorService do
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts image-level progress" do
+    it "broadcasts image-level progress via observer" do
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
         service.call
@@ -72,7 +74,7 @@ RSpec.describe DownloadOrchestratorService do
       ).at_least(:once)
     end
 
-    it "broadcasts status changes" do
+    it "broadcasts status changes via observer" do
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
         service.call

@@ -4,7 +4,7 @@ module DownloadOrchestratorSteps
       return if @context[:completed_early]
 
       download.update!(status: :packing)
-      broadcast_status
+      notify_status_changed
       log!("Packing volumes...")
 
       title = @context[:title]
