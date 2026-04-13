@@ -54,7 +54,7 @@ module DownloadOrchestratorSteps
     end
 
     def notify_progress
-      observers.each { |o| o.on_progress_updated(context) }
+      context.observers.each { |o| o.on_progress_updated(context) }
     end
   end
 end
