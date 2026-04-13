@@ -47,6 +47,16 @@ Each step extends `BaseStep` (which includes `Interactor`) and accesses shared s
 
 **Cancellation**: Individual steps check `cancelled?` within loops.
 
+## Services vs Steps
+
+Services (`app/services/*.rb`) are reusable utilities with no orchestration logic. Steps (`app/services/download_orchestrator_steps/`) are glue that manage status, logging, and context — they call services but add orchestration concerns.
+
+| Service | Step | Relationship |
+|---------|------|-------------|
+| `ImageDownloaderService` | `DownloadImagesStep` | Step tracks progress, manages tmpdir, calls service |
+| `CbzPackerService` | `PackVolumesStep` | Step resolves destination, sets status, calls service |
+| `ChapterSelectorService` | `SelectChaptersStep` | Step filters downloaded volumes, calls service |
+
 ## HttpClientService
 
 Handles API requests to manga sources (rate-limited).
