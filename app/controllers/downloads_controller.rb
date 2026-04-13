@@ -19,12 +19,15 @@ class DownloadsController < ApplicationController
   end
 
   def reprocess
-    command = ReprocessDownloadCommand.new(download_id: params[:id]).call
+    chain = CommandChain.new(
+      [ResolveDownloadCommand, DownloadMangaCommand],
+      download_id: params[:id]
+    ).call
 
-    if command.success?
+    if chain.success?
       redirect_to root_path, notice: "Reprocessing queued!"
     else
-      redirect_to root_path, alert: command.errors.join(", ")
+      redirect_to root_path, alert: chain.errors.join(", ")
     end
   end
 
