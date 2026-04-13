@@ -21,6 +21,13 @@ RSpec.describe "Download E2E", type: :system do
     allow(DownloadMangaJob).to receive(:perform_async) do |download_id|
       DownloadMangaJob.new.perform(download_id)
     end
+    allow(adapter).to receive(:search_manga).and_return({
+      results: [
+        { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", title: "Magi", url: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", thumbnail: nil },
+        { id: "abc-other", title: "Magic Knight Rayearth", url: "https://mangadex.org/title/abc-other", thumbnail: nil }
+      ],
+      total: 2
+    })
 
     @adapter = adapter
   end
@@ -168,6 +175,58 @@ RSpec.describe "Download E2E", type: :system do
       click_button "Process"
 
       expect(page).to have_content("not configured", wait: 5)
+    end
+  end
+
+  describe "search and select manga", :js do
+    it "searches by title, selects result, and fills URL" do
+      stub_chapters([
+        { id: "ch1", chapter: "1", volume: "1", language: "en" }
+      ])
+      stub_images
+
+      # Re-register real adapter so search_manga works in Puma thread
+      real_adapter = MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" })
+      AdapterRegistry.instance.register(:mangadex, real_adapter)
+
+      # Stub MangaDex search API at HTTP level
+      stub_request(:get, %r{https://api\.mangadex\.org/manga\?})
+        .to_return(status: 200, body: {
+          data: [
+            { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", attributes: { title: { en: "Magi" } }, relationships: [] },
+            { id: "abc-other", attributes: { title: { en: "Magic Knight Rayearth" } }, relationships: [] }
+          ],
+          total: 2
+        }.to_json, headers: { "Content-Type" => "application/json" })
+
+      visit root_path
+
+      # Register real adapter for search (instance_double stubs don't work across Puma threads)
+      AdapterRegistry.instance.register(:mangadex,
+        MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" }))
+
+      stub_request(:get, %r{https://api\.mangadex\.org/manga\?})
+        .to_return(status: 200, body: {
+          data: [
+            { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", attributes: { title: { en: "Magi" } }, relationships: [] },
+            { id: "abc-other", attributes: { title: { en: "Magic Knight Rayearth" } }, relationships: [] }
+          ],
+          total: 2
+        }.to_json, headers: { "Content-Type" => "application/json" })
+
+      find("[data-manga-search-target='input']").send_keys("Magi")
+
+      # Dropdown appears with results
+      expect(page).to have_content("Magic Knight Rayearth", wait: 10)
+
+      # Select first result from dropdown
+      within "[data-manga-search-target='results']" do
+        first("[data-action='click->manga-search#select']").click
+      end
+
+      # URL input is filled
+      url_input = find("[data-manga-search-target='urlInput']")
+      expect(url_input.value).to include("mangadex.org/title/")
     end
   end
 

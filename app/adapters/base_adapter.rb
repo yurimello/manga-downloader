@@ -19,6 +19,10 @@ class BaseAdapter
     raise NotImplementedError
   end
 
+  def search_manga(query, limit: 5, offset: 0)
+    raise NotImplementedError
+  end
+
   def url_pattern
     raise NotImplementedError
   end

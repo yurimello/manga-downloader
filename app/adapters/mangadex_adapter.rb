@@ -4,6 +4,35 @@ class MangadexAdapter < BaseAdapter
     @http = http_client
   end
 
+  def search_manga(query, limit: 5, offset: 0)
+    data = @http.get_json(
+      "#{@base_url}/manga",
+      params: {
+        "title" => query,
+        "limit" => limit,
+        "offset" => offset,
+        "includes[]" => "cover_art",
+        "order[relevance]" => "desc"
+      }
+    )
+
+    results = (data["data"] || []).map do |manga|
+      titles = manga.dig("attributes", "title") || {}
+      title = titles["en"] || titles["ja-ro"] || titles["ja"] || "Unknown"
+      cover = (manga["relationships"] || []).find { |r| r["type"] == "cover_art" }
+      cover_filename = cover&.dig("attributes", "fileName")
+      thumbnail = cover_filename ? "https://uploads.mangadex.org/covers/#{manga["id"]}/#{cover_filename}.256.jpg" : nil
+      {
+        id: manga["id"],
+        title: title,
+        url: "https://mangadex.org/title/#{manga["id"]}",
+        thumbnail: thumbnail
+      }
+    end
+
+    { results: results, total: data["total"] || 0 }
+  end
+
   def url_pattern
     %r{mangadex\.org/title/([a-f0-9-]+)}
   end

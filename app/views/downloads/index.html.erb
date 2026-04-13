@@ -1,21 +1,54 @@
 <section class="mb-12">
   <h2 class="text-lg font-semibold mb-4">New Download</h2>
 
-  <%= form_with url: downloads_path, method: :post, class: "flex flex-col gap-3 sm:flex-row sm:items-end", data: { controller: "download-form", action: "submit->download-form#submit" } do |f| %>
-    <div class="flex-1">
-      <label class="block text-sm text-gray-400 mb-1">MangaDex URL</label>
-      <input type="text" name="url" placeholder="https://mangadex.org/title/..." required
+  <div data-controller="manga-search" data-action="click@window->manga-search#hideOnClickOutside" class="mb-3">
+    <label class="block text-sm text-gray-400 mb-1">Search Manga</label>
+    <div class="relative">
+      <input type="text"
+        data-manga-search-target="input"
+        data-action="keyup->manga-search#search"
+        placeholder="Search by title..."
+        autocomplete="off"
         class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+
+      <div data-manga-search-target="dropdown" class="hidden absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded shadow-lg">
+        <div data-manga-search-target="results"
+             data-action="scroll->manga-search#scroll"
+             class="max-h-[250px] overflow-y-auto overscroll-contain">
+        </div>
+      </div>
     </div>
-    <div class="w-full sm:w-40">
-      <label class="block text-sm text-gray-400 mb-1">Volumes <span class="text-gray-600">(optional)</span></label>
-      <input type="text" name="volumes" placeholder="1, 2, 3"
-        class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
-    </div>
-    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded transition">
-      Process
-    </button>
-  <% end %>
+
+    <details class="mt-2">
+      <summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-300">Advanced</summary>
+      <div class="mt-2">
+        <label class="block text-xs text-gray-400 mb-1">Source</label>
+        <select data-manga-search-target="source"
+          class="w-full sm:w-48 bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          <% @sources.each do |source| %>
+            <option value="<%= source %>" <%= "selected" if source.to_s == "mangadex" %>><%= source.to_s.titleize %></option>
+          <% end %>
+        </select>
+      </div>
+    </details>
+
+    <%= form_with url: downloads_path, method: :post, class: "flex flex-col gap-3 sm:flex-row sm:items-end mt-3", data: { controller: "download-form", action: "submit->download-form#submit" } do |f| %>
+      <div class="flex-1">
+        <label class="block text-sm text-gray-400 mb-1">MangaDex URL</label>
+        <input type="text" name="url" placeholder="https://mangadex.org/title/..." required
+          data-manga-search-target="urlInput"
+          class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+      </div>
+      <div class="w-full sm:w-40">
+        <label class="block text-sm text-gray-400 mb-1">Volumes <span class="text-gray-600">(optional)</span></label>
+        <input type="text" name="volumes" placeholder="1, 2, 3"
+          class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+      </div>
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded transition">
+        Process
+      </button>
+    <% end %>
+  </div>
 </section>
 
 <section class="mb-12" data-controller="download-list" data-download-list-section-value="active">

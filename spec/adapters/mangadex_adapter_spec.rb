@@ -89,6 +89,40 @@ RSpec.describe MangadexAdapter do
     end
   end
 
+  describe "#search_manga" do
+    it "returns matching manga with titles and URLs" do
+      allow(http).to receive(:get_json).and_return({
+        "data" => [
+          {
+            "id" => "abc-123",
+            "attributes" => { "title" => { "en" => "Magi" } }
+          },
+          {
+            "id" => "def-456",
+            "attributes" => { "title" => { "en" => "Magic Knight" } }
+          }
+        ],
+        "total" => 10
+      })
+
+      result = adapter.search_manga("magi", limit: 5, offset: 0)
+
+      expect(result[:results].size).to eq(2)
+      expect(result[:results].first[:title]).to eq("Magi")
+      expect(result[:results].first[:url]).to eq("https://mangadex.org/title/abc-123")
+      expect(result[:total]).to eq(10)
+    end
+
+    it "returns empty results for no matches" do
+      allow(http).to receive(:get_json).and_return({ "data" => [], "total" => 0 })
+
+      result = adapter.search_manga("nonexistent")
+
+      expect(result[:results]).to be_empty
+      expect(result[:total]).to eq(0)
+    end
+  end
+
   describe "#image_url" do
     it "constructs full image URL" do
       expect(adapter.image_url("https://cdn.example.com", "abc", "page.jpg"))
