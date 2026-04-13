@@ -31,6 +31,14 @@ class FileManager
     Dir.mktmpdir(prefix)
   end
 
+  def directory?(path)
+    File.directory?(path)
+  end
+
+  def writable?(path)
+    File.writable?(path)
+  end
+
   def dir_exist?(path)
     Dir.exist?(path)
   end
