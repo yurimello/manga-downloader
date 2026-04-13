@@ -29,7 +29,8 @@ end
 Business logic lives in services (`app/services/`), not in models or controllers. Services are plain Ruby classes initialized with dependencies and called with `#call` or specific methods.
 
 **Dependency Inversion Principle (DIP):**
-- No service should know about or instantiate another service. Dependencies are declared via the `step` DSL with lazy defaults.
+- No business service should know about or instantiate another business service. Dependencies are declared via the `step` DSL with lazy defaults.
+- Utility services (e.g., `TmpdirCleanupService`) can be instantiated directly — they are infrastructure, not domain logic.
 - The orchestrator's `initialize` resolves orchestrator-level dependencies (`dependency`), and `call` resolves per-step dependencies (`step ... dependencies:`) — both skip keys already present in context.
 - Callers can override any dependency: `DownloadOrchestratorService.call(download: d, packer: CustomPacker.new)`
 - Services should not query models they don't own. Use model class methods or scopes instead.
