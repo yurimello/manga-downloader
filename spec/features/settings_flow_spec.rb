@@ -1,16 +1,26 @@
 require "rails_helper"
 
 RSpec.describe "Settings flow", type: :feature do
-  it "updates settings" do
+  it "updates settings with valid destination" do
+    dir = Dir.mktmpdir
     visit edit_settings_path
 
     fill_in "max_concurrent_processes", with: "5"
-    fill_in "destination_root", with: "/tmp/custom_manga"
+    fill_in "destination_root", with: dir
     click_button "Save"
 
     expect(page).to have_content("Settings saved.")
     expect(Setting.fetch(:max_concurrent_processes)).to eq("5")
-    expect(Setting.fetch(:destination_root)).to eq("/tmp/custom_manga")
+    expect(Setting.fetch(:destination_root)).to eq(dir)
+  end
+
+  it "shows error when destination is not writable" do
+    visit edit_settings_path
+
+    fill_in "destination_root", with: "/nonexistent/path"
+    click_button "Save"
+
+    expect(page).to have_content("does not exist or is not writable")
   end
 
   it "navigates to settings from navbar" do

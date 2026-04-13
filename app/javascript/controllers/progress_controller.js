@@ -22,7 +22,7 @@ export default class extends Controller {
       this.barTarget.style.width = `${data.progress}%`
     }
     if (this.hasTextTarget) {
-      this.textTarget.textContent = `${data.progress}% (${data.downloaded_images}/${data.total_images} images)`
+      this.textTarget.textContent = `${data.progress}%`
     }
   }
 

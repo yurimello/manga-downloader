@@ -1,14 +1,10 @@
 require "rails_helper"
 
 RSpec.describe ChapterSelectorService do
-  let(:languages_config) do
-    [
-      { "code" => "pt-br", "priority" => 1 },
-      { "code" => "es-la", "priority" => 2 },
-      { "code" => "en", "priority" => 4 }
-    ]
+  let(:priorities) do
+    { "pt-br" => 1, "es-la" => 2, "en" => 4 }
   end
-  let(:service) { described_class.new(languages_config: languages_config) }
+  let(:service) { described_class.new(priorities: priorities) }
 
   describe "#select" do
     let(:chapters) do

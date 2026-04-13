@@ -2,39 +2,75 @@
 
 Services encapsulate business logic and are orchestrated by the `DownloadOrchestratorService`.
 
-## Service Dependency Graph
+## Interactor Pipeline
+
+The download workflow uses `Interactor::Organizer` — a sequence of small, focused steps executed in order. Each step inherits from `BaseStep` (which includes `Interactor`) and shares state through `Interactor::Context`.
 
 ```
-DownloadOrchestratorService
-  ├── AdapterRegistry        → resolves adapter for URL
-  ├── ChapterSelectorService → filters chapters by language/volume
-  ├── ImageDownloaderService → downloads images from CDN
-  │     └── Faraday (CDN)    → parallel HTTP downloads (no rate limiting)
-  ├── CbzPackerService       → packs images into CBZ archives
-  └── ActionCable            → broadcasts progress/status/logs
+DownloadOrchestratorService (Interactor::Organizer)
+  ├── FetchMangaInfoStep   → extract ID, fetch title
+  ├── SelectChaptersStep   → fetch chapters, filter by language/volume, skip downloaded
+  ├── DownloadImagesStep   → count images, download with progress
+  ├── PackVolumesStep      → pack CBZ archives
+  └── RecordVolumesStep    → record volumes in DB, mark completed
 ```
 
-## DownloadOrchestratorService
+### DownloadOrchestratorService
 
-The main workflow coordinator. Runs inside a Sidekiq job.
+Uses `Interactor::Organizer` with `InteractorStepDefinitions` DSL to declare steps and their dependencies. Each step declares its dependencies as lambdas — resolved lazily before the step runs. Dependencies can be overridden by the caller.
 
-**Steps:**
-1. Extract manga ID from URL via adapter
-2. Fetch manga title from API
-3. Fetch all chapters with language filtering
-4. Select chapters via `ChapterSelectorService`
-5. Skip already-downloaded volumes (via `DownloadVolume` records)
-6. Count total images for progress calculation
-7. Download images chapter by chapter (parallel within each chapter)
-8. Pack into CBZ files per volume
-9. Record downloaded volumes in database
-10. Update status to completed
+```ruby
+# Minimal — all dependencies use defaults
+DownloadOrchestratorService.call(download: download)
 
-**Broadcasts at each step**: status changes, per-image progress, log entries.
+# Override specific dependencies
+DownloadOrchestratorService.call(
+  download: download,
+  adapter: custom_adapter,
+  language_config: CustomLanguageConfig,
+  observers: [CustomObserver.new]
+)
+```
 
-**Error handling**: catches all exceptions, sets status to `failed`, logs the error and backtrace.
+**Step DSL** (`InteractorStepDefinitions` from `lib/`):
+- `step StepClass, dependencies: { key: -> { default } }` — per-step dependency with lazy default
+- `dependency key: -> { default }` — orchestrator-level dependency (e.g., observers)
 
-**Cancellation**: checks `download.cancelled?` between chapters.
+Orchestrator registers observers on the download in a `before` hook. Steps just update the model — `Observable` callbacks handle notifications automatically.
+
+Error handling in `around` hook. Tmpdir cleanup via `ServiceUtils::TmpdirCleanup`.
+
+### Steps
+
+Each step inherits from `BaseStep` (which includes `Interactor`) and accesses shared state via `context`.
+
+**Scope rules for shared behavior:**
+- **BaseStep** — methods used by all steps: `download`, `log!`
+- **Private methods** — methods used by one step only: `cancelled?` in `DownloadImagesStep`
+
+| Step | Responsibility |
+|------|---------------|
+| `FetchMangaInfoStep` | Extract manga ID from URL, fetch title from API |
+| `SelectChaptersStep` | Fetch chapters, filter by language/volume, skip already-downloaded volumes |
+| `DownloadImagesStep` | Count images, download with parallel threads, notify progress via Observable |
+| `PackVolumesStep` | Pack images into CBZ archives per volume |
+| `RecordVolumesStep` | Record downloaded volumes in DB, mark download as completed |
+
+**Error handling**: The orchestrator's `around` block catches exceptions, persists the failure to the DB, and calls `context.fail!`. The `Observable` callback on status change triggers the observer broadcast automatically.
+
+**Progress**: `DownloadImagesStep` calls `download.notify(:on_progress_updated, progress)` — no DB write, only ActionCable broadcast via observer.
+
+**Cancellation**: `DownloadImagesStep` checks `cancelled?` within loops.
+
+## Services vs Steps
+
+Services (`app/services/*.rb`) are reusable utilities with no orchestration logic. Steps (`app/services/download_orchestrator_steps/`) are glue that manage status, logging, and context — they call services but add orchestration concerns.
+
+| Service | Step | Relationship |
+|---------|------|-------------|
+| `ImageDownloaderService` | `DownloadImagesStep` | Step tracks progress, manages tmpdir, calls service |
+| `CbzPackerService` | `PackVolumesStep` | Step resolves destination, sets status, calls service |
+| `ChapterSelectorService` | `SelectChaptersStep` | Step filters downloaded volumes, calls service |
 
 ## HttpClientService
 
@@ -42,14 +78,14 @@ Handles API requests to manga sources (rate-limited).
 
 - Retries up to 5 times on HTTP 429 or API error responses
 - Configurable delay between retries (default 2 seconds)
-- Methods: `get_json(url, params:)`, `download_file(url, dest_path)`
+- Methods: `get_json(url, params:)`
 - Custom exceptions: `RateLimitError`, `ApiError`
 
 **Important**: This service is only used for API calls. CDN image downloads use a separate Faraday connection in `ImageDownloaderService` with no rate limiting.
 
 ## ImageDownloaderService
 
-Downloads chapter images from CDN with parallel threads.
+Downloads chapter images from CDN with parallel threads. Uses `SystemUtils` for filesystem operations.
 
 - **Concurrency**: 4 threads (configurable)
 - **Deduplication**: tracks downloaded URLs in a `Set` to skip duplicates across chapters
@@ -57,27 +93,31 @@ Downloads chapter images from CDN with parallel threads.
 - **Thread safety**: `Mutex` protects shared state (count, URL set)
 - **Completion**: `threads.each(&:join)` blocks until all images finish
 
-```ruby
-downloader.download_chapter(chapter_id, dest_dir) do
-  # called after each image downloads (thread-safe)
-  update_progress
-end
-```
-
 ## ChapterSelectorService
 
 Picks the best chapter for each chapter number based on language priority.
 
-- Loads priorities from `config/languages.yml`
+- Defaults to `LanguageConfig.priorities` (from `lib/language_config.rb`)
 - For each chapter number, selects the highest-priority language available
 - Optionally filters by volume list
 - Returns `language_summary` for logging
 
 ## CbzPackerService
 
-Creates CBZ (Comic Book ZIP) archives from downloaded images.
+Creates CBZ (Comic Book ZIP) archives from downloaded images. Uses `SystemUtils` for filesystem operations.
 
 - `pack_volumes(tmpdir, dest, title, volumes)` — one CBZ per volume
 - `pack_single_volume(tmpdir, dest, title)` — all chapters in one CBZ
 - Pages are numbered sequentially across chapters within a volume
 - Output: `Title - Vol. 01.cbz`, `Title - Vol. 02.cbz`, etc.
+
+## Utility Services (`service_utils/`)
+
+Utility services are infrastructure helpers — they can be instantiated directly without dependency injection.
+
+### ServiceUtils::TmpdirCleanup
+
+Cleans up temporary directories after download orchestration.
+
+- Uses `SystemUtils` module methods for filesystem operations
+- Single `call(path)` method — removes directory if it exists

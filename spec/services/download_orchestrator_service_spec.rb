@@ -3,9 +3,12 @@ require "rails_helper"
 RSpec.describe DownloadOrchestratorService do
   let(:download) { create(:download) }
   let(:adapter) { instance_double(MangadexAdapter) }
+  let(:selector) { ChapterSelectorService.new }
+  let(:downloader) { ImageDownloaderService.new(adapter: adapter) }
+  let(:packer) { CbzPackerService.new }
+  let(:observer) { DownloadBroadcastObserver.new }
 
   before do
-    allow(AdapterRegistry).to receive(:for_url).and_return(adapter)
     allow(adapter).to receive(:extract_manga_id).and_return("abc-123")
     allow(adapter).to receive(:fetch_manga_title).and_return("Test Manga")
     allow(adapter).to receive(:fetch_chapters).and_return([
@@ -25,51 +28,56 @@ RSpec.describe DownloadOrchestratorService do
     allow(ActionCable.server).to receive(:broadcast)
   end
 
+  def run_orchestrator(dest_dir: nil)
+    dir = dest_dir || Dir.mktmpdir
+    allow(Setting).to receive(:fetch).and_return(dir)
+
+    described_class.call(
+      download: download,
+      adapter: adapter,
+      selector: selector,
+      downloader: downloader,
+      packer: packer,
+      languages: ["pt-br", "en"],
+      observers: [observer]
+    )
+  end
+
   describe "#call" do
     it "completes successfully" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).and_return(dir)
-        service = described_class.new(download)
-        service.call
+        run_orchestrator(dest_dir: dir)
 
         download.reload
         expect(download.status).to eq("completed")
         expect(download.title).to eq("Test Manga")
-        expect(download.progress).to eq(100)
       end
     end
 
     it "sets status to failed on error" do
       allow(adapter).to receive(:extract_manga_id).and_raise(StandardError, "boom")
 
-      service = described_class.new(download)
-      service.call
+      run_orchestrator
 
       download.reload
       expect(download.status).to eq("failed")
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts image-level progress" do
-      service = described_class.new(download)
-
+    it "broadcasts progress via notify without DB writes" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
         "download_#{download.id}",
-        hash_including(type: "progress_updated", :downloaded_images => a_kind_of(Integer), :total_images => a_kind_of(Integer))
+        hash_including(type: "progress_updated", progress: a_kind_of(Integer))
       ).at_least(:once)
     end
 
-    it "broadcasts status changes" do
-      service = described_class.new(download)
-
+    it "broadcasts all status transitions via Observable" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
@@ -88,12 +96,31 @@ RSpec.describe DownloadOrchestratorService do
       ).once
     end
 
-    it "creates log entries" do
-      service = described_class.new(download)
-
+    it "broadcasts log entries via Observable" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
+      end
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "log_added", message: a_kind_of(String))
+      ).at_least(:once)
+    end
+
+    it "broadcasts failure status on error via Observable" do
+      allow(adapter).to receive(:extract_manga_id).and_raise(StandardError, "boom")
+
+      run_orchestrator
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "status_changed", status: "failed", error_message: "boom")
+      ).once
+    end
+
+    it "creates log entries" do
+      Dir.mktmpdir do |dir|
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(download.download_logs.count).to be > 0

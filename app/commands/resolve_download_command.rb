@@ -1,14 +1,13 @@
 class ResolveDownloadCommand < BaseCommand
   def call
-    download = Download.find_by(id: @context[:download_id])
+    download = Download.find_by(id: context.download_id)
 
     unless download
-      add_error("Download not found")
-      return self
+      context.fail!(message: "Download not found")
+      return
     end
 
-    @context[:url] = download.url
-    @context[:volumes] = download.volumes
-    self
+    context.url = download.url
+    context.volumes = download.volumes
   end
 end

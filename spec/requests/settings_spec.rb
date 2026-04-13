@@ -11,14 +11,24 @@ RSpec.describe "Settings", type: :request do
   end
 
   describe "PATCH /settings" do
-    it "updates settings" do
+    it "updates settings with valid destination" do
+      dir = Dir.mktmpdir
       patch settings_path, params: {
         max_concurrent_processes: "3",
-        destination_root: "/tmp/manga"
+        destination_root: dir
       }
       expect(response).to redirect_to(edit_settings_path)
       expect(Setting.fetch(:max_concurrent_processes)).to eq("3")
-      expect(Setting.fetch(:destination_root)).to eq("/tmp/manga")
+      expect(Setting.fetch(:destination_root)).to eq(dir)
+    end
+
+    it "redirects with error for invalid destination" do
+      patch settings_path, params: {
+        max_concurrent_processes: "3",
+        destination_root: "/nonexistent/path"
+      }
+      expect(response).to redirect_to(edit_settings_path)
+      expect(flash[:alert]).to include("does not exist or is not writable")
     end
   end
 end

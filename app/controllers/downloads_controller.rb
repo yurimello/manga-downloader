@@ -5,29 +5,25 @@ class DownloadsController < ApplicationController
   end
 
   def create
-    command = DownloadMangaCommand.new(
+    result = ProcessDownloadCommand.call(
       url: params[:url],
       volumes: params[:volumes].presence
-    ).call
+    )
 
-
-    if command.success?
+    if result.success?
       redirect_to root_path, notice: "Download queued!"
     else
-      redirect_to root_path, alert: command.errors.join(", ")
+      redirect_to root_path, alert: result.message
     end
   end
 
   def reprocess
-    chain = CommandChain.new(
-      [ResolveDownloadCommand, DownloadMangaCommand],
-      download_id: params[:id]
-    ).call
+    result = ReprocessDownloadCommand.call(download_id: params[:id])
 
-    if chain.success?
+    if result.success?
       redirect_to root_path, notice: "Reprocessing queued!"
     else
-      redirect_to root_path, alert: chain.errors.join(", ")
+      redirect_to root_path, alert: result.message
     end
   end
 

@@ -1,6 +1,6 @@
 class ChapterSelectorService
-  def initialize(languages_config: nil)
-    @priorities = build_priorities(languages_config)
+  def initialize(priorities: nil)
+    @priorities = priorities || LanguageConfig.priorities
   end
 
   def select(chapters, volumes: nil)
@@ -29,15 +29,6 @@ class ChapterSelectorService
   def language_summary(chapters)
     chapters.each_with_object(Hash.new(0)) do |ch, counts|
       counts[ch[:language]] += 1
-    end
-  end
-
-  private
-
-  def build_priorities(config)
-    config ||= YAML.load_file(Rails.root.join("config", "languages.yml"))["languages"]
-    config.each_with_object({}) do |lang, hash|
-      hash[lang["code"]] = lang["priority"]
     end
   end
 end

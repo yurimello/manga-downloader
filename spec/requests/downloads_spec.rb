@@ -4,6 +4,7 @@ RSpec.describe "Downloads", type: :request do
   let(:adapter) { instance_double(MangadexAdapter, url_pattern: %r{mangadex\.org}) }
 
   before do
+    Setting.store(:destination_root, Dir.mktmpdir)
     allow(AdapterRegistry).to receive(:for_url).and_return(adapter)
     registry = AdapterRegistry.instance
     registry.register(:mangadex, adapter)

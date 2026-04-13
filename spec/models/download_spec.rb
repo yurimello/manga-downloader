@@ -39,11 +39,8 @@ RSpec.describe Download, type: :model do
       expect { download.log!("test message") }.to change(DownloadLog, :count).by(1)
     end
 
-    it "broadcasts via ActionCable" do
-      expect(ActionCable.server).to receive(:broadcast).with(
-        "download_#{download.id}",
-        hash_including(type: "log_added")
-      )
+    it "does not broadcast directly" do
+      expect(ActionCable.server).not_to receive(:broadcast)
       download.log!("test message")
     end
   end

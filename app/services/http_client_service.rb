@@ -36,12 +36,6 @@ class HttpClientService
     end
   end
 
-  def download_file(url, dest_path)
-    response = @conn.get(url)
-    File.binwrite(dest_path, response.body) if response.status == 200
-    response.status == 200
-  end
-
   class RateLimitError < StandardError; end
   class ApiError < StandardError; end
 end

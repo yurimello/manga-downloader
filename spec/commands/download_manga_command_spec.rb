@@ -10,41 +10,36 @@ RSpec.describe DownloadMangaCommand do
     allow(DownloadMangaJob).to receive(:perform_async)
   end
 
-  describe "#call" do
+  describe ".call" do
     it "creates a download and enqueues job" do
-      command = described_class.new(
-        url: "https://mangadex.org/title/abc-123/test"
-      ).call
+      result = described_class.call(url: "https://mangadex.org/title/abc-123/test")
 
-      expect(command).to be_success
-      expect(command.result).to be_a(Download)
-      expect(command.result.status).to eq("queued")
-      expect(DownloadMangaJob).to have_received(:perform_async).with(command.result.id)
+      expect(result).to be_success
+      expect(result.download).to be_a(Download)
+      expect(result.download.status).to eq("queued")
+      expect(DownloadMangaJob).to have_received(:perform_async).with(result.download.id)
     end
 
     it "saves volumes" do
-      command = described_class.new(
-        url: "https://mangadex.org/title/abc-123/test",
-        volumes: "1, 2, 3"
-      ).call
+      result = described_class.call(url: "https://mangadex.org/title/abc-123/test", volumes: "1, 2, 3")
 
-      expect(command.result.volumes).to eq("1, 2, 3")
+      expect(result.download.volumes).to eq("1, 2, 3")
     end
 
     it "fails with blank URL" do
-      command = described_class.new(url: "").call
+      result = described_class.call(url: "")
 
-      expect(command).not_to be_success
-      expect(command.errors).to include("URL is required")
+      expect(result).to be_failure
+      expect(result.message).to eq("URL is required")
     end
 
     it "fails with unsupported URL" do
       allow(AdapterRegistry).to receive(:for_url).and_return(nil)
 
-      command = described_class.new(url: "https://unknown.com/test").call
+      result = described_class.call(url: "https://unknown.com/test")
 
-      expect(command).not_to be_success
-      expect(command.errors).to include("No adapter found for this URL")
+      expect(result).to be_failure
+      expect(result.message).to eq("No adapter found for this URL")
     end
   end
 end

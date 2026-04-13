@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe MangadexAdapter, "integration", type: :adapter do
-  let(:adapter) { described_class.new("base_url" => "https://api.mangadex.org") }
+  let(:adapter) { described_class.new({ "base_url" => "https://api.mangadex.org" }) }
 
   describe "#fetch_manga_title", vcr: { cassette_name: "mangadex/fetch_title" } do
     it "fetches title from MangaDex API" do
