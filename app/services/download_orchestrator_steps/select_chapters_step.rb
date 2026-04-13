@@ -1,5 +1,6 @@
 module DownloadOrchestratorSteps
-  class SelectChaptersStep < BaseStep
+  class SelectChaptersStep
+    include BaseStep
     def call
       languages = load_languages
       log!("Fetching chapters...")
@@ -24,7 +25,6 @@ module DownloadOrchestratorSteps
       if new_chapters.empty?
         log!("All volumes already downloaded")
         download.update!(status: :completed, progress: 100, completed_at: Time.current)
-        notify_status_changed
         context.completed_early = true
         return
       end

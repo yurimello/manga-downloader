@@ -1,5 +1,13 @@
-class BaseStep
-  include Interactor
+module BaseStep
+  extend ActiveSupport::Concern
+
+  included do
+    include Interactor
+
+    after do
+      notify_observers(:on_status_changed)
+    end
+  end
 
   private
 
@@ -11,12 +19,8 @@ class BaseStep
     download.log!(message, level: level)
   end
 
-  def notify_status_changed
-    (context.observers || []).each { |o| o.on_status_changed(context) }
-  end
-
-  def notify_progress_updated
-    (context.observers || []).each { |o| o.on_progress_updated(context) }
+  def notify_observers(event, *args)
+    (context.observers || []).each { |o| o.public_send(event, context, *args) }
   end
 
   def cancelled?

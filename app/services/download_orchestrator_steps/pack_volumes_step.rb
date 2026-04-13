@@ -1,10 +1,10 @@
 module DownloadOrchestratorSteps
-  class PackVolumesStep < BaseStep
+  class PackVolumesStep
+    include BaseStep
     def call
       return if context.completed_early
 
       download.update!(status: :packing)
-      notify_status_changed
       log!("Packing volumes...")
 
       dest = File.join(Setting.fetch(:destination_root, "/downloads"), context.title)

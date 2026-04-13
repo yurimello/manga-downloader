@@ -80,20 +80,29 @@ end
 Source-specific logic (fetching manga from MangaDex, etc.) lives in adapters (`app/adapters/`). All adapters implement the same interface defined in `BaseAdapter`. New sources are added via config, not code changes to existing files.
 
 ### Observer Pattern
-Steps and commands must never call ActionCable directly. Use observers to decouple broadcasting from business logic. Both `ServicePipeline` and `CommandChain` accept `observers:`.
+Steps and commands must never call ActionCable directly. Use observers passed via `context.observers` to decouple broadcasting from business logic.
+
+`BaseStep` is a concern that includes `Interactor` and registers an `after` callback that automatically notifies `on_status_changed` after each step completes. For per-image progress, steps call `notify_observers(:on_progress_updated)` explicitly. Errors are caught in the orchestrator's `around` hook.
 
 ```ruby
-# Good — step notifies observer, observer handles ActionCable
-notify_status_changed
+# Automatic — after callback in BaseStep notifies status changes
+class MyStep
+  include BaseStep
 
-# Bad — step calls ActionCable directly
-ActionCable.server.broadcast("download_#{download.id}", { ... })
+  def call
+    download.update!(status: :downloading)
+    # on_status_changed fires automatically after call returns
+  end
+end
+
+# Explicit — for high-frequency updates within a step
+notify_observers(:on_progress_updated)
 ```
 
 Observers extend `ContextObserver` and implement:
-- `on_status_changed(context)` — download status changed
-- `on_progress_updated(context)` — image download progress
-- `on_error(context, error)` — pipeline error occurred
+- `on_status_changed(context)` — called automatically after each step via `after` hook
+- `on_progress_updated(context)` — called explicitly for per-image progress
+- `on_error(context, error)` — called from orchestrator's `around` hook on failure
 
 ## Code Style
 

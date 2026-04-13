@@ -1,5 +1,6 @@
 module DownloadOrchestratorSteps
-  class DownloadImagesStep < BaseStep
+  class DownloadImagesStep
+    include BaseStep
     def call
       return if context.completed_early
 
@@ -33,7 +34,7 @@ module DownloadOrchestratorSteps
           download.update!(progress: progress)
           context.downloaded_images = downloaded_images
           context.total_images = total_images
-          notify_progress_updated
+          notify_observers(:on_progress_updated)
         end
 
         volume_stats[ch[:volume]][:chapters] += 1
