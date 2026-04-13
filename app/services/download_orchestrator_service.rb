@@ -39,8 +39,7 @@ class DownloadOrchestratorService
     context.observers.each { |o| o.on_error(context, e) }
     context.fail!(error: e)
   ensure
-    tmpdir = context.tmpdir
-    context.file_manager&.rm_rf(tmpdir) if tmpdir && context.file_manager&.dir_exist?(tmpdir)
+    TmpdirCleanupService.new(file_manager: context.file_manager).call(context.tmpdir) if context.file_manager
   end
 
   def initialize(context = {})
