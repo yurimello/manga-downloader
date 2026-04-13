@@ -17,7 +17,7 @@ ServicePipeline
 
 ### ServicePipeline
 
-Generic pipeline runner (like `CommandChain` but for services). Runs steps in sequence, stops on error or cancellation.
+Base class using the `interactor` gem's `Interactor::Organizer`. Provides `steps` class method for declaring the step sequence. Each step includes `Interactor` via `BaseStep` and receives a shared `Interactor::Context`.
 
 ### DownloadOrchestratorService
 
@@ -37,7 +37,7 @@ The **job** (`DownloadMangaJob`) is the composition root that wires up all depen
 
 ### Steps
 
-Each step extends `BaseStep` which provides access to `download`, `log!`, `broadcast_status`, and `broadcast_progress`.
+Each step extends `BaseStep` (which includes `Interactor`) and accesses shared state via `context`. `BaseStep` provides `download`, `log!`, `notify_status_changed`, and `notify_progress_updated`.
 
 | Step | Responsibility |
 |------|---------------|
@@ -47,9 +47,9 @@ Each step extends `BaseStep` which provides access to `download`, `log!`, `broad
 | `PackVolumesStep` | Pack images into CBZ archives per volume |
 | `RecordVolumesStep` | Record downloaded volumes in DB, mark download as completed |
 
-**Error handling**: `ServicePipeline` catches exceptions and stops. The orchestrator then sets status to `failed` and broadcasts.
+**Error handling**: The orchestrator's `around` block catches exceptions, notifies the observer (which sets status to `failed` and broadcasts), then calls `context.fail!`.
 
-**Cancellation**: The pipeline checks `download.cancelled?` between steps. Individual steps also check cancellation within loops.
+**Cancellation**: Individual steps check `cancelled?` within loops.
 
 ## HttpClientService
 

@@ -1,17 +1,10 @@
 class BaseStep
-  def initialize(context, observers: [])
-    @context = context
-    @observers = observers
-  end
-
-  def call
-    raise NotImplementedError
-  end
+  include Interactor
 
   private
 
   def download
-    @context[:download]
+    context.download
   end
 
   def log!(message, level: :info)
@@ -19,10 +12,14 @@ class BaseStep
   end
 
   def notify_status_changed
-    @observers.each { |o| o.on_status_changed(@context) }
+    (context.observers || []).each { |o| o.on_status_changed(context) }
   end
 
   def notify_progress_updated
-    @observers.each { |o| o.on_progress_updated(@context) }
+    (context.observers || []).each { |o| o.on_progress_updated(context) }
+  end
+
+  def cancelled?
+    download.reload.cancelled?
   end
 end

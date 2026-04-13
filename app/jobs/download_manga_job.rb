@@ -17,13 +17,13 @@ class DownloadMangaJob
 
     adapter = AdapterRegistry.for_url(download.url)
 
-    DownloadOrchestratorService.new(
-      download,
+    DownloadOrchestratorService.call(
+      download: download,
       adapter: adapter,
       selector: ChapterSelectorService.new,
       downloader: ImageDownloaderService.new(adapter: adapter),
       packer: CbzPackerService.new,
       observers: [DownloadBroadcastObserver.new]
-    ).call
+    )
   end
 end

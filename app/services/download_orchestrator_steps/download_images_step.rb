@@ -1,18 +1,17 @@
 module DownloadOrchestratorSteps
   class DownloadImagesStep < BaseStep
     def call
-      return if @context[:completed_early]
+      return if context.completed_early
 
-      chapters = @context[:chapters]
-      downloader = @context[:downloader]
+      chapters = context.chapters
+      downloader = context.downloader
       tmpdir = Dir.mktmpdir("manga_dl_")
-      @context[:tmpdir] = tmpdir
+      context.tmpdir = tmpdir
 
-      # Count total images
       total_images = 0
       chapter_images = {}
       chapters.each do |ch|
-        return if download.reload.cancelled?
+        return if cancelled?
         count = downloader.count_images(ch[:id])
         chapter_images[ch[:id]] = count
         total_images += count
@@ -23,7 +22,7 @@ module DownloadOrchestratorSteps
       volume_stats = Hash.new { |h, k| h[k] = { chapters: 0, pages: 0 } }
 
       chapters.each do |ch|
-        return if download.reload.cancelled?
+        return if cancelled?
 
         chdir = File.join(tmpdir, "vol#{ch[:volume]}", "ch#{ch[:chapter].gsub('.', '_')}")
         log!("Ch.#{ch[:chapter]} (Vol.#{ch[:volume]}) — #{chapter_images[ch[:id]]} pages")
@@ -32,8 +31,8 @@ module DownloadOrchestratorSteps
           downloaded_images += 1
           progress = total_images > 0 ? ((downloaded_images.to_f / total_images) * 100).to_i : 0
           download.update!(progress: progress)
-          @context[:downloaded_images] = downloaded_images
-          @context[:total_images] = total_images
+          context.downloaded_images = downloaded_images
+          context.total_images = total_images
           notify_progress_updated
         end
 
@@ -43,7 +42,7 @@ module DownloadOrchestratorSteps
         log!("  #{count} pages downloaded")
       end
 
-      @context[:volume_stats] = volume_stats
+      context.volume_stats = volume_stats
     end
   end
 end

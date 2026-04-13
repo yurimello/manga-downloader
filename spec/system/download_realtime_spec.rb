@@ -21,6 +21,9 @@ RSpec.describe "Download real-time updates", type: :system do
 
     stub_request(:get, "https://cdn.example.com/data/abc/page1.jpg")
       .to_return(status: 200, body: "fake_image_data")
+
+    allow(Setting).to receive(:fetch).and_call_original
+    allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(Dir.mktmpdir)
   end
 
   it "shows progress and completes in real time", :js do

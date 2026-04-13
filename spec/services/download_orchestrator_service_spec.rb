@@ -8,17 +8,6 @@ RSpec.describe DownloadOrchestratorService do
   let(:packer) { CbzPackerService.new }
   let(:observer) { DownloadBroadcastObserver.new }
 
-  let(:service) do
-    described_class.new(
-      download,
-      adapter: adapter,
-      selector: selector,
-      downloader: downloader,
-      packer: packer,
-      observers: [observer]
-    )
-  end
-
   before do
     allow(adapter).to receive(:extract_manga_id).and_return("abc-123")
     allow(adapter).to receive(:fetch_manga_title).and_return("Test Manga")
@@ -39,11 +28,24 @@ RSpec.describe DownloadOrchestratorService do
     allow(ActionCable.server).to receive(:broadcast)
   end
 
+  def run_orchestrator(dest_dir: nil)
+    dir = dest_dir || Dir.mktmpdir
+    allow(Setting).to receive(:fetch).and_return(dir)
+
+    described_class.call(
+      download: download,
+      adapter: adapter,
+      selector: selector,
+      downloader: downloader,
+      packer: packer,
+      observers: [observer]
+    )
+  end
+
   describe "#call" do
     it "completes successfully" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
 
         download.reload
         expect(download.status).to eq("completed")
@@ -55,7 +57,7 @@ RSpec.describe DownloadOrchestratorService do
     it "sets status to failed on error" do
       allow(adapter).to receive(:extract_manga_id).and_raise(StandardError, "boom")
 
-      service.call
+      run_orchestrator
 
       download.reload
       expect(download.status).to eq("failed")
@@ -64,8 +66,7 @@ RSpec.describe DownloadOrchestratorService do
 
     it "broadcasts image-level progress via observer" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
@@ -76,8 +77,7 @@ RSpec.describe DownloadOrchestratorService do
 
     it "broadcasts status changes via observer" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(ActionCable.server).to have_received(:broadcast).with(
@@ -98,8 +98,7 @@ RSpec.describe DownloadOrchestratorService do
 
     it "creates log entries" do
       Dir.mktmpdir do |dir|
-        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
-        service.call
+        run_orchestrator(dest_dir: dir)
       end
 
       expect(download.download_logs.count).to be > 0
