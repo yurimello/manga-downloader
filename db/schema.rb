@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_202505) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_221800) do
   create_table "download_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "download_id", null: false
@@ -37,7 +37,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_202505) do
     t.datetime "created_at", null: false
     t.text "error_message"
     t.string "manga_id"
-    t.integer "progress", default: 0
     t.string "source"
     t.datetime "started_at"
     t.integer "status", default: 0

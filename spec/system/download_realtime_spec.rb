@@ -40,7 +40,7 @@ RSpec.describe "Download real-time updates", type: :system do
   end
 
   it "renders active download with progress controller attached", :js do
-    download = create(:download, :downloading, progress: 25)
+    download = create(:download, :downloading)
 
     visit root_path
 
@@ -49,7 +49,7 @@ RSpec.describe "Download real-time updates", type: :system do
     )
 
     within "#download-#{download.id}" do
-      expect(page).to have_content("25%")
+      expect(page).to have_content("0%")
     end
   end
 

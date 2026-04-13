@@ -22,7 +22,7 @@ module DownloadOrchestratorSteps
 
       if new_chapters.empty?
         log!("All volumes already downloaded")
-        download.update!(status: :completed, progress: 100, completed_at: Time.current)
+        download.update!(status: :completed, completed_at: Time.current)
         context.completed_early = true
         return
       end

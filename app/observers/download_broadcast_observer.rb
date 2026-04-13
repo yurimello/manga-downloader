@@ -5,7 +5,6 @@ class DownloadBroadcastObserver < ContextObserver
       download_id: download.id,
       status: download.status,
       title: download.title,
-      progress: download.progress,
       error_message: download.error_message
     })
   end

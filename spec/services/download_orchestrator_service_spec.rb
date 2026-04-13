@@ -51,7 +51,6 @@ RSpec.describe DownloadOrchestratorService do
         download.reload
         expect(download.status).to eq("completed")
         expect(download.title).to eq("Test Manga")
-        expect(download.progress).to eq(100)
       end
     end
 
