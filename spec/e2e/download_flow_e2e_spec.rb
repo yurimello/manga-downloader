@@ -53,6 +53,46 @@ RSpec.describe "Download E2E", type: :system do
     end
   end
 
+  describe "search selects title and fills URL", :js do
+    it "clicking a search result sets title and URL inputs", vcr: { cassette_name: "mangadex/search_magi" } do
+      # Use real adapter for search
+      AdapterRegistry.instance.register(:mangadex,
+        MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" }))
+
+      visit root_path
+
+      # Search input is empty, URL input is empty
+      expect(find("[data-manga-search-target='input']").value).to eq("")
+      expect(find("[data-manga-search-target='urlInput']").value).to eq("")
+
+      # Type search query
+      find("[data-manga-search-target='input']").send_keys("Magi")
+
+      # Wait for dropdown results
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1, wait: 10)
+      end
+
+      # Get the first result's title before clicking
+      first_result = find("[data-manga-search-target='results'] [data-action='click->manga-search#select']", match: :first)
+      expected_title = first_result["data-title"]
+      expected_url = first_result["data-url"]
+
+      # Click the result
+      first_result.click
+
+      # Title input updated
+      expect(find("[data-manga-search-target='input']").value).to eq(expected_title)
+
+      # URL input updated with MangaDex URL
+      expect(find("[data-manga-search-target='urlInput']").value).to eq(expected_url)
+      expect(expected_url).to match(%r{mangadex\.org/title/})
+
+      # Dropdown hidden
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
+    end
+  end
+
   describe "full download flow", :js do
     it "submits URL, downloads, packs CBZ, and shows completed" do
       stub_chapters([
