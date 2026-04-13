@@ -4,6 +4,8 @@ class Setting < ApplicationRecord
   validates :key, presence: true, uniqueness: true
   validate :destination_root_must_be_writable, if: -> { key == "destination_root" && value.present? }
 
+  after_validation :notify_validation_error, if: -> { errors.any? }
+
   def self.fetch(key, default = nil)
     find_by(key: key.to_s)&.value || default
   end
@@ -22,5 +24,9 @@ class Setting < ApplicationRecord
     unless SystemUtils.directory?(value) && SystemUtils.writable?(value)
       errors.add(:value, "directory '#{value}' does not exist or is not writable")
     end
+  end
+
+  def notify_validation_error
+    notify(:on_error, errors.full_messages)
   end
 end
