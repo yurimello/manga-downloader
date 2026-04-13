@@ -10,17 +10,10 @@ RSpec.describe DownloadMangaJob do
   end
 
   describe "#perform" do
-    it "runs the orchestrator" do
+    it "runs the orchestrator with the download" do
       described_class.new.perform(download.id)
       expect(DownloadOrchestratorService).to have_received(:call).with(
-        hash_including(
-          download: download,
-          adapter: anything,
-          selector: a_kind_of(ChapterSelectorService),
-          downloader: a_kind_of(ImageDownloaderService),
-          packer: a_kind_of(CbzPackerService),
-          observers: [a_kind_of(DownloadBroadcastObserver)]
-        )
+        hash_including(download: download)
       )
     end
 

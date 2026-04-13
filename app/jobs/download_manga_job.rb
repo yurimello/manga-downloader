@@ -15,26 +15,6 @@ class DownloadMangaJob
       return
     end
 
-    adapter = AdapterRegistry.for_url(download.url)
-    file_manager = FileManager.new
-    languages = load_languages
-
-    DownloadOrchestratorService.call(
-      download: download,
-      adapter: adapter,
-      selector: ChapterSelectorService.new,
-      downloader: ImageDownloaderService.new(adapter: adapter, file_manager: file_manager),
-      packer: CbzPackerService.new(file_manager: file_manager),
-      file_manager: file_manager,
-      languages: languages,
-      observers: [DownloadBroadcastObserver.new]
-    )
-  end
-
-  private
-
-  def load_languages
-    config = YAML.load_file(Rails.root.join("config", "languages.yml"))
-    config["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] }
+    DownloadOrchestratorService.call(download: download)
   end
 end
