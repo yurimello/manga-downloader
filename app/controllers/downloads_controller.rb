@@ -5,7 +5,7 @@ class DownloadsController < ApplicationController
   end
 
   def create
-    result = CreateDownloadCommand.call(
+    result = ProcessDownloadCommand.call(
       url: params[:url],
       volumes: params[:volumes].presence
     )
