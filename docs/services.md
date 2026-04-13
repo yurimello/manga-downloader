@@ -17,19 +17,26 @@ DownloadOrchestratorService (Interactor::Organizer)
 
 ### DownloadOrchestratorService
 
-Uses `Interactor::Organizer` from the `interactor` gem to declare and run steps in sequence. All dependencies are injected via context — the orchestrator never instantiates other services. Error handling and tmpdir cleanup are handled in an `around` block.
+Uses `Interactor::Organizer` with `InteractorStepDefinitions` DSL to declare steps and their dependencies. Each step declares its dependencies as lambdas — resolved lazily before the step runs. Dependencies can be overridden by the caller.
 
 ```ruby
-DownloadOrchestratorService.new(
-  download,
-  adapter:    adapter,     # manga source adapter (e.g. MangadexAdapter)
-  selector:   selector,    # ChapterSelectorService
-  downloader: downloader,  # ImageDownloaderService
-  packer:     packer       # CbzPackerService
+# Minimal — all dependencies use defaults
+DownloadOrchestratorService.call(download: download)
+
+# Override specific dependencies
+DownloadOrchestratorService.call(
+  download: download,
+  adapter: custom_adapter,
+  language_config: CustomLanguageConfig,
+  observers: [CustomObserver.new]
 )
 ```
 
-The **job** (`DownloadMangaJob`) is the composition root that wires up all dependencies.
+**Step DSL** (`InteractorStepDefinitions` from `lib/`):
+- `step StepClass, dependencies: { key: -> { default } }` — per-step dependency with lazy default
+- `dependency key: -> { default }` — orchestrator-level dependency (e.g., observers)
+
+Error handling in `around` hook. Tmpdir cleanup via `TmpdirCleanupService`.
 
 ### Steps
 
@@ -48,9 +55,11 @@ Each step inherits from `BaseStep` (which includes `Interactor`) and accesses sh
 | `PackVolumesStep` | Pack images into CBZ archives per volume |
 | `RecordVolumesStep` | Record downloaded volumes in DB, mark download as completed |
 
-**Error handling**: The orchestrator's `around` block catches exceptions, notifies the observer (which sets status to `failed` and broadcasts), then calls `context.fail!`.
+**Error handling**: The orchestrator's `around` block catches exceptions, persists the failure to the DB, notifies the observer (which broadcasts), then calls `context.fail!`.
 
 **Cancellation**: Individual steps check `cancelled?` within loops.
+
+**Tmpdir cleanup**: `TmpdirCleanupService` runs in the `ensure` block — uses `FileManager` directly.
 
 ## Services vs Steps
 
@@ -94,10 +103,17 @@ end
 
 Picks the best chapter for each chapter number based on language priority.
 
-- Loads priorities from `config/languages.yml`
+- Defaults to `LanguageConfig.priorities` (from `lib/language_config.rb`)
 - For each chapter number, selects the highest-priority language available
 - Optionally filters by volume list
 - Returns `language_summary` for logging
+
+## TmpdirCleanupService
+
+Cleans up temporary directories after download orchestration.
+
+- Defaults to `FileManager.new` for filesystem operations
+- Single `call(path)` method — removes directory if it exists
 
 ## CbzPackerService
 

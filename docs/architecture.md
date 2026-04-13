@@ -17,18 +17,23 @@ Request → Controller → Command → Job (composition root) → Orchestrator (
 app/
 ├── adapters/          # Source-specific manga fetchers (adapter pattern)
 ├── channels/          # ActionCable WebSocket channels
-├── commands/          # User action handlers (command pattern + chain)
+├── commands/          # User action handlers (interactor pattern)
 ├── observers/         # Observer pattern (ActionCable broadcasting)
 ├── controllers/       # HTTP request handlers
 ├── javascript/
 │   ├── channels/      # ActionCable JS subscriptions
 │   └── controllers/   # Stimulus controllers
-├── jobs/              # Sidekiq background jobs (composition root)
+├── jobs/              # Sidekiq background jobs
 ├── models/            # ActiveRecord models
 ├── services/          # Business logic
 │   ├── concerns/                     # Shared modules for services/steps
 │   └── download_orchestrator_steps/  # Pipeline steps for download orchestration
 └── views/             # ERB templates
+
+lib/
+├── file_manager.rb                  # Filesystem abstraction (Dir, File, FileUtils)
+├── interactor_step_definitions.rb   # DSL for declaring per-step dependencies
+└── language_config.rb               # Language codes and priorities from config
 ```
 
 ## Models

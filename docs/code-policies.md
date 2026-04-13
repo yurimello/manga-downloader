@@ -29,22 +29,22 @@ end
 Business logic lives in services (`app/services/`), not in models or controllers. Services are plain Ruby classes initialized with dependencies and called with `#call` or specific methods.
 
 **Dependency Inversion Principle (DIP):**
-- No service should know about or instantiate another service. Dependencies are injected via constructor.
-- The **job** is the composition root — it wires up the adapter, selector, downloader, and packer, then passes them to the orchestrator.
+- No service should know about or instantiate another service. Dependencies are declared via the `step` DSL with lazy defaults.
+- The orchestrator's `initialize` resolves orchestrator-level dependencies (`dependency`), and `call` resolves per-step dependencies (`step ... dependencies:`) — both skip keys already present in context.
+- Callers can override any dependency: `DownloadOrchestratorService.call(download: d, packer: CustomPacker.new)`
 - Services should not query models they don't own. Use model class methods or scopes instead.
 
-```ruby
-# Good — dependencies injected via context, job is composition root
-DownloadOrchestratorService.call(
-  download: download,
-  adapter: adapter,
-  selector: ChapterSelectorService.new,
-  downloader: ImageDownloaderService.new(adapter: adapter),
-  packer: CbzPackerService.new,
-  observers: [DownloadBroadcastObserver.new]
-)
+**Lib classes** (`lib/`) provide shared utilities:
+- `FileManager` — filesystem abstraction, injected into services
+- `LanguageConfig` — language codes/priorities from YAML config
+- `InteractorStepDefinitions` — DSL module for declaring step dependencies
 
-# Bad — service instantiates its own dependencies
+```ruby
+# Good — defaults declared per step, caller overrides what it needs
+DownloadOrchestratorService.call(download: download)
+DownloadOrchestratorService.call(download: download, packer: CustomPacker.new)
+
+# Bad — service instantiates its own dependencies inline
 class OrchestratorService
   def call
     downloader = ImageDownloaderService.new(adapter: @adapter)  # violation
@@ -56,13 +56,18 @@ end
 When a workflow has multiple sequential responsibilities, split it into steps using `Interactor::Organizer`. Each step inherits `BaseStep`, receives shared `Interactor::Context`, and does one thing.
 
 ```ruby
-# Good — small focused steps composed via Interactor::Organizer
+# Good — steps with declarative dependencies via InteractorStepDefinitions DSL
 class DownloadOrchestratorService
   include Interactor::Organizer
+  extend InteractorStepDefinitions
 
-  organize FetchMangaInfoStep,
-           SelectChaptersStep,
-           DownloadImagesStep
+  step FetchMangaInfoStep,
+       dependencies: { adapter: -> (ctx) { AdapterRegistry.for_url(ctx[:download].url) } }
+
+  step SelectChaptersStep,
+       dependencies: { selector: -> { ChapterSelectorService.new } }
+
+  dependency observers: -> { [DownloadBroadcastObserver.new] }
 end
 
 # Bad — one service doing everything
@@ -71,8 +76,6 @@ class BigService
     fetch_info
     select_chapters
     download_images
-    pack_volumes
-    record_results
   end
 end
 ```
@@ -88,9 +91,11 @@ The orchestrator notifies `on_status_changed` after each step via its `call` met
 ```ruby
 # Orchestrator handles status notifications — steps stay clean
 def call
-  self.class.organized.each do |step|
-    step.call!(context)
-    (context.observers || []).each { |o| o.on_status_changed(context) }
+  self.class.step_definitions.each do |step_class, deps|
+    # resolve per-step dependencies before running
+    deps.each { |key, factory| context[key] ||= resolve_factory(factory, context) }
+    step_class.call!(context)
+    context.observers.each { |o| o.on_status_changed(context) }
   end
 end
 ```
