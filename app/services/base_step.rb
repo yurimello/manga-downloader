@@ -1,13 +1,5 @@
-module BaseStep
-  extend ActiveSupport::Concern
-
-  included do
-    include Interactor
-
-    after do
-      notify_observers(:on_status_changed)
-    end
-  end
+class BaseStep
+  include Interactor
 
   private
 

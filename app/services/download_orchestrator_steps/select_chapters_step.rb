@@ -1,6 +1,7 @@
 module DownloadOrchestratorSteps
-  class SelectChaptersStep
-    include BaseStep
+  class SelectChaptersStep < BaseStep
+    after { notify_observers(:on_status_changed) }
+
     def call
       languages = load_languages
       log!("Fetching chapters...")

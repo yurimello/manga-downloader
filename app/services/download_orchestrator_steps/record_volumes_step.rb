@@ -1,6 +1,6 @@
 module DownloadOrchestratorSteps
-  class RecordVolumesStep
-    include BaseStep
+  class RecordVolumesStep < BaseStep
+    after { notify_observers(:on_status_changed) }
     def call
       return if context.completed_early
 

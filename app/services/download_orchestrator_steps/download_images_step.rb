@@ -1,6 +1,5 @@
 module DownloadOrchestratorSteps
-  class DownloadImagesStep
-    include BaseStep
+  class DownloadImagesStep < BaseStep
     def call
       return if context.completed_early
 
