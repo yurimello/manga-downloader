@@ -1,5 +1,5 @@
 class TmpdirCleanupService
-  def initialize(file_manager:)
+  def initialize(file_manager: FileManager.new)
     @fs = file_manager
   end
 
