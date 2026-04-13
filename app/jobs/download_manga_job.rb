@@ -16,13 +16,15 @@ class DownloadMangaJob
     end
 
     adapter = AdapterRegistry.for_url(download.url)
+    file_manager = FileManager.new
 
     DownloadOrchestratorService.call(
       download: download,
       adapter: adapter,
       selector: ChapterSelectorService.new,
-      downloader: ImageDownloaderService.new(adapter: adapter),
-      packer: CbzPackerService.new,
+      downloader: ImageDownloaderService.new(adapter: adapter, file_manager: file_manager),
+      packer: CbzPackerService.new(file_manager: file_manager),
+      file_manager: file_manager,
       observers: [DownloadBroadcastObserver.new]
     )
   end

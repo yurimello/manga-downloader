@@ -6,7 +6,8 @@ module DownloadOrchestratorSteps
       download.update!(status: :packing)
       log!("Packing volumes...")
 
-      dest = File.join(Setting.fetch(:destination_root, "/downloads"), context.title)
+      fs = context.file_manager || FileManager.new
+      dest = fs.join(Setting.fetch(:destination_root, "/downloads"), context.title)
       volumes = context.chapters.map { |ch| ch[:volume] }.uniq.sort_by { |v| v.to_f }
 
       results = if volumes.all? { |v| v == "0" }

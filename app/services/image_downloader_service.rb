@@ -1,7 +1,8 @@
 class ImageDownloaderService
-  def initialize(adapter:, concurrency: 4)
+  def initialize(adapter:, concurrency: 4, file_manager: FileManager.new)
     @adapter = adapter
     @concurrency = concurrency
+    @fs = file_manager
     @downloaded_urls = Set.new
     @mutex = Mutex.new
     @cdn_conn = Faraday.new do |f|
@@ -19,7 +20,7 @@ class ImageDownloaderService
     images = @adapter.fetch_chapter_images(chapter_id)
     return 0 unless images[:base_url] && images[:hash]
 
-    FileUtils.mkdir_p(dest_dir)
+    @fs.mkdir_p(dest_dir)
 
     tasks = images[:filenames].each_with_index.filter_map do |filename, idx|
       url = @adapter.image_url(images[:base_url], images[:hash], filename)
@@ -27,8 +28,8 @@ class ImageDownloaderService
       skip = @mutex.synchronize { !@downloaded_urls.add?(url) }
       next if skip
 
-      ext = File.extname(filename)
-      out_path = File.join(dest_dir, format("%03d%s", idx + 1, ext))
+      ext = @fs.extname(filename)
+      out_path = @fs.join(dest_dir, format("%03d%s", idx + 1, ext))
       { url: url, out_path: out_path }
     end
 
@@ -58,7 +59,7 @@ class ImageDownloaderService
 
   def cdn_download(url, dest_path)
     response = @cdn_conn.get(url)
-    File.binwrite(dest_path, response.body) if response.status == 200
+    @fs.binwrite(dest_path, response.body) if response.status == 200
     response.status == 200
   rescue Faraday::Error
     false

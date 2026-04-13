@@ -5,7 +5,8 @@ module DownloadOrchestratorSteps
 
       chapters = context.chapters
       downloader = context.downloader
-      tmpdir = Dir.mktmpdir("manga_dl_")
+      fs = context.file_manager || FileManager.new
+      tmpdir = fs.mktmpdir("manga_dl_")
       context.tmpdir = tmpdir
 
       total_images = 0
@@ -24,7 +25,7 @@ module DownloadOrchestratorSteps
       chapters.each do |ch|
         return if cancelled?
 
-        chdir = File.join(tmpdir, "vol#{ch[:volume]}", "ch#{ch[:chapter].gsub('.', '_')}")
+        chdir = fs.join(tmpdir, "vol#{ch[:volume]}", "ch#{ch[:chapter].gsub('.', '_')}")
         log!("Ch.#{ch[:chapter]} (Vol.#{ch[:volume]}) — #{chapter_images[ch[:id]]} pages")
 
         count = downloader.download_chapter(ch[:id], chdir) do

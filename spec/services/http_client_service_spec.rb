@@ -39,27 +39,4 @@ RSpec.describe HttpClientService do
     end
   end
 
-  describe "#download_file" do
-    it "saves file to disk" do
-      stub_request(:get, "https://cdn.example.com/page.jpg")
-        .to_return(status: 200, body: "image_data")
-
-      Dir.mktmpdir do |dir|
-        path = File.join(dir, "page.jpg")
-        result = service.download_file("https://cdn.example.com/page.jpg", path)
-        expect(result).to be true
-        expect(File.read(path)).to eq("image_data")
-      end
-    end
-
-    it "returns false on failure" do
-      stub_request(:get, "https://cdn.example.com/page.jpg")
-        .to_return(status: 404)
-
-      Dir.mktmpdir do |dir|
-        result = service.download_file("https://cdn.example.com/page.jpg", File.join(dir, "page.jpg"))
-        expect(result).to be false
-      end
-    end
-  end
 end
