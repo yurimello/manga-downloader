@@ -19,7 +19,7 @@ class DownloadOrchestratorService
 
   step DownloadOrchestratorSteps::RecordVolumesStep
 
-  step_default observers: -> { [DownloadBroadcastObserver.new] }
+  dependency observers: -> { [DownloadBroadcastObserver.new] }
 
   around do |interactor|
     interactor.call
@@ -36,7 +36,7 @@ class DownloadOrchestratorService
 
   def initialize(context = {})
     resolved = context.dup
-    self.class.global_defaults.each do |key, factory|
+    self.class.dependencies.each do |key, factory|
       next if resolved.key?(key)
       resolved[key] = resolve_factory(factory, resolved)
     end
