@@ -8,15 +8,22 @@ class DownloadOrchestratorService
            DownloadOrchestratorSteps::RecordVolumesStep
 
   def initialize(context = {})
-    super(context)
-    context = self.context
-    context.adapter       ||= AdapterRegistry.for_url(context.download.url)
-    context.file_manager  ||= FileManager.new
-    context.selector      ||= ChapterSelectorService.new
-    context.downloader    ||= ImageDownloaderService.new(adapter: context.adapter, file_manager: context.file_manager)
-    context.packer        ||= CbzPackerService.new(file_manager: context.file_manager)
-    context.languages     ||= load_languages
-    context.observers     ||= [DownloadBroadcastObserver.new]
+    context = context.to_h if context.respond_to?(:to_h) && !context.is_a?(Hash)
+    download      = context[:download]
+    file_manager  = context[:file_manager]  || FileManager.new
+    adapter       = context[:adapter]       || AdapterRegistry.for_url(download.url)
+
+    defaults = {
+      adapter:      adapter,
+      file_manager: file_manager,
+      selector:     context[:selector]    || ChapterSelectorService.new,
+      downloader:   context[:downloader]  || ImageDownloaderService.new(adapter: adapter, file_manager: file_manager),
+      packer:       context[:packer]      || CbzPackerService.new(file_manager: file_manager),
+      languages:    context[:languages]   || self.class.load_languages,
+      observers:    context[:observers]   || [DownloadBroadcastObserver.new]
+    }
+
+    super(defaults.merge(context))
   end
 
   around do |interactor|
@@ -39,9 +46,7 @@ class DownloadOrchestratorService
     end
   end
 
-  private
-
-  def load_languages
+  def self.load_languages
     config = YAML.load_file(Rails.root.join("config", "languages.yml"))
     config["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] }
   end
