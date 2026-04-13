@@ -9,7 +9,6 @@ class Download < ApplicationRecord
   validates :url, presence: true
 
   after_update :notify_status_changed, if: -> { saved_change_to_attribute?("status") }
-  after_update :notify_progress_updated, if: -> { saved_change_to_attribute?("progress") }
 
   scope :active, -> { where(status: [:queued, :downloading, :packing]) }
   scope :completed_or_failed, -> { where(status: [:completed, :failed]) }
@@ -28,9 +27,5 @@ class Download < ApplicationRecord
 
   def notify_status_changed
     notify(:on_status_changed)
-  end
-
-  def notify_progress_updated
-    notify(:on_progress_updated)
   end
 end

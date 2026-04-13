@@ -65,7 +65,7 @@ RSpec.describe DownloadOrchestratorService do
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts progress automatically via Observable" do
+    it "broadcasts progress via notify without DB writes" do
       Dir.mktmpdir do |dir|
         run_orchestrator(dest_dir: dir)
       end

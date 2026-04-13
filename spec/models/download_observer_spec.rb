@@ -23,15 +23,10 @@ RSpec.describe "Download observable behavior" do
     end
   end
 
-  describe "progress changes" do
-    it "notifies on_progress_updated when progress changes" do
-      download.update!(progress: 50)
-      expect(observer).to have_received(:on_progress_updated).with(download)
-    end
-
-    it "does not notify when progress stays the same" do
-      download.update!(title: "New Title")
-      expect(observer).not_to have_received(:on_progress_updated)
+  describe "progress notification" do
+    it "notifies on_progress_updated via notify without DB write" do
+      download.notify(:on_progress_updated, 50)
+      expect(observer).to have_received(:on_progress_updated).with(download, 50)
     end
   end
 

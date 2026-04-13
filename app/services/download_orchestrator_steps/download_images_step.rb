@@ -30,7 +30,7 @@ module DownloadOrchestratorSteps
         count = downloader.download_chapter(ch[:id], chdir) do
           downloaded_images += 1
           progress = total_images > 0 ? ((downloaded_images.to_f / total_images) * 100).to_i : 0
-          download.update!(progress: progress)
+          download.notify(:on_progress_updated, progress)
         end
 
         volume_stats[ch[:volume]][:chapters] += 1

@@ -10,11 +10,11 @@ class DownloadBroadcastObserver < ContextObserver
     })
   end
 
-  def on_progress_updated(download)
+  def on_progress_updated(download, progress)
     ActionCable.server.broadcast("download_#{download.id}", {
       type: "progress_updated",
       download_id: download.id,
-      progress: download.progress
+      progress: progress
     })
   end
 
