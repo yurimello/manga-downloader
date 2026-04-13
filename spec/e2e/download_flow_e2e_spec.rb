@@ -17,25 +17,68 @@ RSpec.describe "Download E2E", type: :system do
     it "clicking a search result sets title and URL inputs", vcr: { cassette_name: "e2e/search_magi", record: :new_episodes } do
       visit root_path
 
-      expect(find("[data-manga-search-target='input']").value).to eq("")
-      expect(find("[data-manga-search-target='urlInput']").value).to eq("")
+      # Stimulus controller is connected
+      expect(page).to have_css("[data-controller='manga-search']")
 
-      find("[data-manga-search-target='input']").send_keys("Magi")
+      # Controller has all required targets
+      controller_el = find("[data-controller='manga-search']")
+      expect(controller_el).to have_css("[data-manga-search-target='input']")
+      expect(controller_el).to have_css("[data-manga-search-target='urlInput']")
+      expect(controller_el).to have_css("[data-manga-search-target='dropdown']", visible: :all)
+      expect(controller_el).to have_css("[data-manga-search-target='results']", visible: :all)
+
+      # Verify Stimulus controller is initialized
+      is_connected = page.evaluate_script(<<~JS)
+        (function() {
+          var el = document.querySelector("[data-controller='manga-search']");
+          return el && el.dataset.controller === 'manga-search';
+        })()
+      JS
+      expect(is_connected).to be true
+
+      # Inputs start empty
+      search_input = find("[data-manga-search-target='input']")
+      url_input = find("[data-manga-search-target='urlInput']")
+      expect(search_input.value).to eq("")
+      expect(url_input.value).to eq("")
+
+      # Dropdown starts hidden
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
+
+      # Type search query — triggers keyup -> manga-search#search
+      search_input.send_keys("Magi")
+      expect(search_input.value).to eq("Magi")
+
+      # Dropdown becomes visible with results
+      expect(page).not_to have_css("[data-manga-search-target='dropdown'].hidden", wait: 10)
 
       within "[data-manga-search-target='results']" do
-        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1, wait: 10)
+        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1)
       end
 
+      # Each result has data-title and data-url attributes
       first_result = find("[data-manga-search-target='results'] [data-action='click->manga-search#select']", match: :first)
+      expect(first_result["data-title"]).not_to be_nil
+      expect(first_result["data-url"]).not_to be_nil
+      expect(first_result["data-url"]).to match(%r{mangadex\.org/title/})
+
       expected_title = first_result["data-title"]
       expected_url = first_result["data-url"]
 
+      # Click the result
       first_result.click
 
-      expect(find("[data-manga-search-target='input']").value).to eq(expected_title)
-      expect(find("[data-manga-search-target='urlInput']").value).to eq(expected_url)
-      expect(expected_url).to match(%r{mangadex\.org/title/})
+      # Search input updated with selected title
+      expect(search_input.value).to eq(expected_title)
+
+      # URL input updated with MangaDex URL
+      expect(url_input.value).to eq(expected_url)
+
+      # Dropdown hidden after selection
       expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
+
+      # URL input is submittable (has value in the form)
+      expect(find("input[name='url']").value).to eq(expected_url)
     end
   end
 
