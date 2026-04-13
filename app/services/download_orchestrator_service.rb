@@ -11,7 +11,7 @@ class DownloadOrchestratorService
   step DownloadOrchestratorSteps::SelectChaptersStep,
        dependencies: {
          selector:  -> { ChapterSelectorService.new },
-         languages: -> { YAML.load_file(Rails.root.join("config", "languages.yml"))["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] } }
+         languages: -> { LanguageLoaderService.call }
        }
 
   step DownloadOrchestratorSteps::DownloadImagesStep,
