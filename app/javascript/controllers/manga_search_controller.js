@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "dropdown", "results", "urlInput", "source"]
+  static targets = ["input", "dropdown", "results", "urlInput", "source", "sort"]
 
   connect() {
     this.offset = 0
@@ -36,7 +36,8 @@ export default class extends Controller {
 
     try {
       const source = this.hasSourceTarget ? this.sourceTarget.value : "mangadex"
-      const response = await fetch(`/search?q=${encodeURIComponent(this.query)}&offset=${this.offset}&source=${source}`)
+      const sort = this.hasSortTarget ? this.sortTarget.value : "relevance"
+      const response = await fetch(`/search?q=${encodeURIComponent(this.query)}&offset=${this.offset}&source=${source}&sort=${sort}`)
       const data = await response.json()
 
       this.total = data.total

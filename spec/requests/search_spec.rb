@@ -26,12 +26,12 @@ RSpec.describe "Search", type: :request do
       expect(json["total"]).to eq(1)
     end
 
-    it "passes offset for pagination" do
+    it "passes offset and sort for pagination" do
       allow(adapter).to receive(:search_manga).and_return({ results: [], total: 0 })
 
-      get search_path, params: { q: "magi", offset: 5 }
+      get search_path, params: { q: "magi", offset: 5, sort: "rating" }
 
-      expect(adapter).to have_received(:search_manga).with("magi", limit: 5, offset: 5)
+      expect(adapter).to have_received(:search_manga).with("magi", limit: 5, offset: 5, sort: "rating")
     end
 
     it "returns empty for blank query" do
