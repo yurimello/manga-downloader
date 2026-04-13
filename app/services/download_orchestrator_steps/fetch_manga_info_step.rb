@@ -1,7 +1,5 @@
 module DownloadOrchestratorSteps
   class FetchMangaInfoStep < BaseStep
-    after { notify_observers(:on_status_changed) }
-
     def call
       download.update!(status: :downloading, started_at: Time.current)
 

@@ -82,14 +82,14 @@ Source-specific logic (fetching manga from MangaDex, etc.) lives in adapters (`a
 ### Observer Pattern
 Steps and commands must never call ActionCable directly. Use observers passed via `context.observers` to decouple broadcasting from business logic.
 
-Steps that change download status declare an `after` hook to notify observers. Steps use `notify_observers` for explicit notifications like progress updates. Errors are caught in the orchestrator's `around` hook.
+The orchestrator notifies `on_status_changed` after each step via its `call` method. Steps only call `notify_observers(:on_progress_updated)` explicitly for high-frequency updates. Errors are caught in the orchestrator's `around` hook.
 
 ```ruby
-class MyStep < BaseStep
-  after { notify_observers(:on_status_changed) }
-
-  def call
-    download.update!(status: :downloading)
+# Orchestrator handles status notifications — steps stay clean
+def call
+  self.class.organized.each do |step|
+    step.call!(context)
+    (context.observers || []).each { |o| o.on_status_changed(context) }
   end
 end
 ```

@@ -16,4 +16,11 @@ class DownloadOrchestratorService
     tmpdir = context.tmpdir
     FileUtils.rm_rf(tmpdir) if tmpdir && Dir.exist?(tmpdir)
   end
+
+  def call
+    self.class.organized.each do |step|
+      step.call!(context)
+      (context.observers || []).each { |o| o.on_status_changed(context) }
+    end
+  end
 end

@@ -1,6 +1,5 @@
 module DownloadOrchestratorSteps
   class PackVolumesStep < BaseStep
-    after { notify_observers(:on_status_changed) }
     def call
       return if context.completed_early
 
