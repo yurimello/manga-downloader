@@ -15,6 +15,14 @@ class DownloadMangaJob
       return
     end
 
-    DownloadOrchestratorService.new(download).call
+    adapter = AdapterRegistry.for_url(download.url)
+
+    DownloadOrchestratorService.new(
+      download,
+      adapter: adapter,
+      selector: ChapterSelectorService.new,
+      downloader: ImageDownloaderService.new(adapter: adapter),
+      packer: CbzPackerService.new
+    ).call
   end
 end

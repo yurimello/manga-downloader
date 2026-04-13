@@ -7,4 +7,8 @@ class DownloadVolume < ApplicationRecord
   def self.already_downloaded?(manga_id, volume)
     where(manga_id: manga_id, volume: volume).exists?
   end
+
+  def self.downloaded_volumes_for(manga_id)
+    where(manga_id: manga_id).pluck(:volume).to_set
+  end
 end

@@ -3,9 +3,21 @@ require "rails_helper"
 RSpec.describe DownloadOrchestratorService do
   let(:download) { create(:download) }
   let(:adapter) { instance_double(MangadexAdapter) }
+  let(:selector) { ChapterSelectorService.new }
+  let(:downloader) { ImageDownloaderService.new(adapter: adapter) }
+  let(:packer) { CbzPackerService.new }
+
+  let(:service) do
+    described_class.new(
+      download,
+      adapter: adapter,
+      selector: selector,
+      downloader: downloader,
+      packer: packer
+    )
+  end
 
   before do
-    allow(AdapterRegistry).to receive(:for_url).and_return(adapter)
     allow(adapter).to receive(:extract_manga_id).and_return("abc-123")
     allow(adapter).to receive(:fetch_manga_title).and_return("Test Manga")
     allow(adapter).to receive(:fetch_chapters).and_return([
@@ -29,7 +41,6 @@ RSpec.describe DownloadOrchestratorService do
     it "completes successfully" do
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).and_return(dir)
-        service = described_class.new(download)
         service.call
 
         download.reload
@@ -42,7 +53,6 @@ RSpec.describe DownloadOrchestratorService do
     it "sets status to failed on error" do
       allow(adapter).to receive(:extract_manga_id).and_raise(StandardError, "boom")
 
-      service = described_class.new(download)
       service.call
 
       download.reload
@@ -51,8 +61,6 @@ RSpec.describe DownloadOrchestratorService do
     end
 
     it "broadcasts image-level progress" do
-      service = described_class.new(download)
-
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
         service.call
@@ -65,8 +73,6 @@ RSpec.describe DownloadOrchestratorService do
     end
 
     it "broadcasts status changes" do
-      service = described_class.new(download)
-
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
         service.call
@@ -89,8 +95,6 @@ RSpec.describe DownloadOrchestratorService do
     end
 
     it "creates log entries" do
-      service = described_class.new(download)
-
       Dir.mktmpdir do |dir|
         allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
         service.call

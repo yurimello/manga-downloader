@@ -5,9 +5,10 @@
 The application follows a layered architecture with clear separation of concerns:
 
 ```
-Request → Controller → Command → Job → Orchestrator → Services → Adapters
-                                            ↕
-                                      ActionCable (real-time)
+Request → Controller → Command → Job (composition root) → Orchestrator → ServicePipeline
+                                   ↓ injects                                    ↓
+                            Adapter, Selector,                         Step → Step → Step
+                            Downloader, Packer                         (shared context)
 ```
 
 ## Directory Structure
@@ -16,14 +17,15 @@ Request → Controller → Command → Job → Orchestrator → Services → Ada
 app/
 ├── adapters/          # Source-specific manga fetchers (adapter pattern)
 ├── channels/          # ActionCable WebSocket channels
-├── commands/          # User action handlers (command pattern)
+├── commands/          # User action handlers (command pattern + chain)
 ├── controllers/       # HTTP request handlers
 ├── javascript/
 │   ├── channels/      # ActionCable JS subscriptions
 │   └── controllers/   # Stimulus controllers
-├── jobs/              # Sidekiq background jobs
+├── jobs/              # Sidekiq background jobs (composition root)
 ├── models/            # ActiveRecord models
 ├── services/          # Business logic
+│   └── download_orchestrator_steps/  # Pipeline steps for download orchestration
 └── views/             # ERB templates
 ```
 

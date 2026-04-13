@@ -2,39 +2,54 @@
 
 Services encapsulate business logic and are orchestrated by the `DownloadOrchestratorService`.
 
-## Service Dependency Graph
+## Service Pipeline
+
+The download workflow uses a **pipeline pattern** — a sequence of small, focused steps executed in order. Each step receives a shared context hash and does one thing.
 
 ```
-DownloadOrchestratorService
-  ├── AdapterRegistry        → resolves adapter for URL
-  ├── ChapterSelectorService → filters chapters by language/volume
-  ├── ImageDownloaderService → downloads images from CDN
-  │     └── Faraday (CDN)    → parallel HTTP downloads (no rate limiting)
-  ├── CbzPackerService       → packs images into CBZ archives
-  └── ActionCable            → broadcasts progress/status/logs
+ServicePipeline
+  ├── DownloadOrchestratorSteps::FetchMangaInfoStep   → extract ID, fetch title
+  ├── DownloadOrchestratorSteps::SelectChaptersStep   → fetch chapters, filter by language/volume, skip downloaded
+  ├── DownloadOrchestratorSteps::DownloadImagesStep   → count images, download with progress
+  ├── DownloadOrchestratorSteps::PackVolumesStep      → pack CBZ archives
+  └── DownloadOrchestratorSteps::RecordVolumesStep    → record volumes in DB, mark completed
 ```
 
-## DownloadOrchestratorService
+### ServicePipeline
 
-The main workflow coordinator. Runs inside a Sidekiq job.
+Generic pipeline runner (like `CommandChain` but for services). Runs steps in sequence, stops on error or cancellation.
 
-**Steps:**
-1. Extract manga ID from URL via adapter
-2. Fetch manga title from API
-3. Fetch all chapters with language filtering
-4. Select chapters via `ChapterSelectorService`
-5. Skip already-downloaded volumes (via `DownloadVolume` records)
-6. Count total images for progress calculation
-7. Download images chapter by chapter (parallel within each chapter)
-8. Pack into CBZ files per volume
-9. Record downloaded volumes in database
-10. Update status to completed
+### DownloadOrchestratorService
 
-**Broadcasts at each step**: status changes, per-image progress, log entries.
+Thin wrapper that defines the step order, builds the context, and handles failure. All dependencies are injected via constructor — the orchestrator never instantiates other services.
 
-**Error handling**: catches all exceptions, sets status to `failed`, logs the error and backtrace.
+```ruby
+DownloadOrchestratorService.new(
+  download,
+  adapter:    adapter,     # manga source adapter (e.g. MangadexAdapter)
+  selector:   selector,    # ChapterSelectorService
+  downloader: downloader,  # ImageDownloaderService
+  packer:     packer       # CbzPackerService
+)
+```
 
-**Cancellation**: checks `download.cancelled?` between chapters.
+The **job** (`DownloadMangaJob`) is the composition root that wires up all dependencies.
+
+### Steps
+
+Each step extends `BaseStep` which provides access to `download`, `log!`, `broadcast_status`, and `broadcast_progress`.
+
+| Step | Responsibility |
+|------|---------------|
+| `FetchMangaInfoStep` | Extract manga ID from URL, fetch title from API |
+| `SelectChaptersStep` | Fetch chapters, filter by language/volume, skip already-downloaded volumes |
+| `DownloadImagesStep` | Count images, download with parallel threads, track progress |
+| `PackVolumesStep` | Pack images into CBZ archives per volume |
+| `RecordVolumesStep` | Record downloaded volumes in DB, mark download as completed |
+
+**Error handling**: `ServicePipeline` catches exceptions and stops. The orchestrator then sets status to `failed` and broadcasts.
+
+**Cancellation**: The pipeline checks `download.cancelled?` between steps. Individual steps also check cancellation within loops.
 
 ## HttpClientService
 

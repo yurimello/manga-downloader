@@ -28,6 +28,52 @@ end
 ### Service Objects
 Business logic lives in services (`app/services/`), not in models or controllers. Services are plain Ruby classes initialized with dependencies and called with `#call` or specific methods.
 
+**Dependency Inversion Principle (DIP):**
+- No service should know about or instantiate another service. Dependencies are injected via constructor.
+- The **job** is the composition root — it wires up the adapter, selector, downloader, and packer, then passes them to the orchestrator.
+- Services should not query models they don't own. Use model class methods or scopes instead.
+
+```ruby
+# Good — dependencies injected
+DownloadOrchestratorService.new(
+  download,
+  adapter: adapter,
+  selector: ChapterSelectorService.new,
+  downloader: ImageDownloaderService.new(adapter: adapter),
+  packer: CbzPackerService.new
+).call
+
+# Bad — service instantiates its own dependencies
+class OrchestratorService
+  def call
+    downloader = ImageDownloaderService.new(adapter: @adapter)  # violation
+  end
+end
+```
+
+### Service Pipeline
+When a workflow has multiple sequential responsibilities, split it into steps and run them through `ServicePipeline`. Each step extends `BaseStep`, receives a shared context hash, and does one thing.
+
+```ruby
+# Good — small focused steps composed via pipeline
+ServicePipeline.new([
+  DownloadOrchestratorSteps::FetchMangaInfoStep,
+  DownloadOrchestratorSteps::SelectChaptersStep,
+  DownloadOrchestratorSteps::DownloadImagesStep
+], context).call
+
+# Bad — one service doing everything
+class BigService
+  def call
+    fetch_info
+    select_chapters
+    download_images
+    pack_volumes
+    record_results
+  end
+end
+```
+
 ### Adapter Pattern
 Source-specific logic (fetching manga from MangaDex, etc.) lives in adapters (`app/adapters/`). All adapters implement the same interface defined in `BaseAdapter`. New sources are added via config, not code changes to existing files.
 
