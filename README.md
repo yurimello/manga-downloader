@@ -32,7 +32,7 @@ See [docs/](docs/) for detailed documentation:
 
 ## Setup
 
-### Docker (recommended)
+### Docker — Production
 
 1. Create a `.env` file:
 
@@ -57,6 +57,15 @@ docker compose exec web bin/rails db:seed
 4. Open http://localhost:3333
 
 Downloaded manga will be saved to `~/Comics/Manga` on your host by default.
+
+### Docker — Development
+
+```bash
+docker compose -f docker-compose.dev.yml up --build -d
+docker compose -f docker-compose.dev.yml exec web bin/rails db:setup
+```
+
+Source code is mounted — changes reload automatically without rebuilding. Open http://localhost:3333
 
 ### Local Development
 
