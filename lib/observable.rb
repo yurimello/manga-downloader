@@ -1,7 +1,7 @@
 module Observable
   def self.included(base)
     base.after_update :notify_observers_on_change
-    base.after_validation :notify_observers_on_validation_error, if: -> { errors.any? }
+    base.after_validation :notify_observers_on_error, if: -> { errors.any? }
   end
 
   def add_observer(observer)
@@ -19,8 +19,8 @@ module Observable
     notify(:on_progress_updated) if saved_change_to_attribute?("progress")
   end
 
-  def notify_observers_on_validation_error
-    notify(:on_validation_error, errors.full_messages)
+  def notify_observers_on_error
+    notify(:on_error, errors.full_messages)
   end
 
   def notify(event, *args)
