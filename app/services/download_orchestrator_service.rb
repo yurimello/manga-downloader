@@ -10,8 +10,9 @@ class DownloadOrchestratorService
 
   step DownloadOrchestratorSteps::SelectChaptersStep,
        dependencies: {
-         selector:  -> { ChapterSelectorService.new },
-         languages: -> { LanguageConfig.codes }
+         language_config: -> { LanguageConfig },
+         selector:  -> (ctx) { ChapterSelectorService.new(priorities: ctx[:language_config].priorities) },
+         languages: -> (ctx) { ctx[:language_config].codes }
        }
 
   step DownloadOrchestratorSteps::DownloadImagesStep,
