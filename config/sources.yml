@@ -3,5 +3,3 @@ shared:
     mangadex:
       adapter_class: MangadexAdapter
       base_url: https://api.mangadex.org
-      rate_limit_retries: 5
-      rate_limit_delay: 2
