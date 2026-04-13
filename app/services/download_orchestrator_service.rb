@@ -11,7 +11,7 @@ class DownloadOrchestratorService
   step DownloadOrchestratorSteps::SelectChaptersStep,
        dependencies: {
          selector:  -> { ChapterSelectorService.new },
-         languages: -> { LanguageLoader.codes }
+         languages: -> { LanguageConfig.codes }
        }
 
   step DownloadOrchestratorSteps::DownloadImagesStep,
