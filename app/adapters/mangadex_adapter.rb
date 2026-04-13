@@ -1,11 +1,10 @@
 class MangadexAdapter < BaseAdapter
-  def initialize(config = {})
+  def initialize(config = {}, http_client: nil)
     @base_url = config.fetch("base_url", "https://api.mangadex.org")
-    @http = HttpClientService.new(
+    @http = http_client || HttpClientService.new(
       rate_limit_retries: config.fetch("rate_limit_retries", 5),
       rate_limit_delay: config.fetch("rate_limit_delay", 2)
     )
-    @image_delay = config.fetch("image_delay", 0.5)
   end
 
   def url_pattern

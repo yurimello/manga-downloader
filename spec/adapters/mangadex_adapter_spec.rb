@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe MangadexAdapter do
   let(:http) { instance_double(HttpClientService) }
-  let(:adapter) { described_class.new("base_url" => "https://api.mangadex.org") }
+  let(:adapter) { described_class.new({ "base_url" => "https://api.mangadex.org" }, http_client: http) }
 
   describe "#extract_manga_id" do
     it "extracts ID from MangaDex URL" do
