@@ -12,7 +12,7 @@ class MangadexAdapter < BaseAdapter
         "limit" => limit,
         "offset" => offset,
         "includes[]" => "cover_art",
-        "order[relevance]" => "desc"
+        "order[followedCount]" => "desc"
       }
     )
 
