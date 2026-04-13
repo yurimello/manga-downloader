@@ -1,9 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
-import { subscribeToDownload, unsubscribeFromDownload } from "../channels/download_channel"
+import { subscribeToDownload, unsubscribeFromDownload } from "channels/download_channel"
 
 export default class extends Controller {
   static values = { downloadId: Number }
-  static targets = ["bar", "text"]
+  static targets = ["bar", "text", "status", "title"]
 
   connect() {
     subscribeToDownload(this.downloadIdValue, {
@@ -22,7 +22,7 @@ export default class extends Controller {
       this.barTarget.style.width = `${data.progress}%`
     }
     if (this.hasTextTarget) {
-      this.textTarget.textContent = `${data.progress}% (${data.current_chapter}/${data.total_chapters})`
+      this.textTarget.textContent = `${data.progress}% (${data.downloaded_images}/${data.total_images} images)`
     }
   }
 
@@ -40,12 +40,19 @@ export default class extends Controller {
   handleStatus(data) {
     if (data.status === "completed" || data.status === "failed") {
       window.location.reload()
+      return
     }
 
-    const statusEl = this.element.querySelector(".text-xs.text-gray-500")
-    if (statusEl && data.title) {
-      const titleEl = this.element.querySelector(".font-medium")
-      if (titleEl) titleEl.textContent = data.title
+    if (this.hasTitleTarget && data.title) {
+      this.titleTarget.textContent = data.title
     }
+
+    if (this.hasStatusTarget) {
+      this.statusTarget.textContent = this.humanize(data.status)
+    }
+  }
+
+  humanize(status) {
+    return status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ")
   }
 }

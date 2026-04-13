@@ -9,8 +9,12 @@
       <span class="font-medium"><%= download.title || download.url %></span>
       <span class="text-xs text-gray-500"><%= download.completed_at&.strftime("%Y-%m-%d %H:%M") %></span>
     </div>
-    <%= button_to "Remove", download_path(download), method: :delete,
-        class: "text-xs text-gray-500 hover:text-gray-300" %>
+    <div class="flex gap-3">
+      <%= button_to "Reprocess", reprocess_download_path(download), method: :post,
+          class: "text-xs text-indigo-400 hover:text-indigo-300" %>
+      <%= button_to "Remove", download_path(download), method: :delete,
+          class: "text-xs text-gray-500 hover:text-gray-300" %>
+    </div>
   </div>
 
   <% if download.error_message.present? %>

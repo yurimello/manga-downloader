@@ -7,3 +7,7 @@ languages:
     priority: 3
   - code: en
     priority: 4
+  - code: fr
+    priority: 5
+  - code: it
+    priority: 6

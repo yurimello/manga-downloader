@@ -1,20 +1,24 @@
 class DownloadMangaCommand < BaseCommand
-  def initialize(url:, volumes: nil)
-    super()
-    @url = url
-    @volumes = volumes
-  end
-
   def call
-    validate!
-    return self unless success?
+    url = @context[:url]
+    volumes = @context[:volumes]
 
-    adapter = AdapterRegistry.for_url(@url)
-    source = AdapterRegistry.instance.sources.find { |s| AdapterRegistry.for_source(s)&.url_pattern&.match?(@url) }
+    if url.blank?
+      add_error("URL is required")
+      return self
+    end
+
+    adapter = AdapterRegistry.for_url(url)
+    unless adapter
+      add_error("No adapter found for this URL")
+      return self
+    end
+
+    source = AdapterRegistry.instance.sources.find { |s| AdapterRegistry.for_source(s)&.url_pattern&.match?(url) }
 
     download = Download.create!(
-      url: @url,
-      volumes: @volumes,
+      url: url,
+      volumes: volumes,
       status: :queued,
       source: source
     )
@@ -22,12 +26,5 @@ class DownloadMangaCommand < BaseCommand
     DownloadMangaJob.perform_async(download.id)
     @result = download
     self
-  end
-
-  private
-
-  def validate!
-    add_error("URL is required") if @url.blank?
-    add_error("No adapter found for this URL") if @url.present? && AdapterRegistry.for_url(@url).nil?
   end
 end

@@ -1,6 +1,7 @@
 class Download < ApplicationRecord
   enum :status, { queued: 0, downloading: 1, packing: 2, completed: 3, failed: 4, cancelled: 5 }
 
+  has_many :download_volumes, dependent: :destroy
   has_many :download_logs, dependent: :destroy
 
   validates :url, presence: true
