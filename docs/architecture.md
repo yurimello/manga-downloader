@@ -26,6 +26,7 @@ app/
 ├── jobs/              # Sidekiq background jobs (composition root)
 ├── models/            # ActiveRecord models
 ├── services/          # Business logic
+│   ├── concerns/                     # Shared modules for services/steps
 │   └── download_orchestrator_steps/  # Pipeline steps for download orchestration
 └── views/             # ERB templates
 ```
@@ -88,16 +89,23 @@ The registry auto-loads adapters on Rails boot via `config/initializers/source_a
 
 ## Observer Pattern (Real-time Updates)
 
-Steps and commands never touch ActionCable directly. Instead, they notify observers via `notify_status_changed` and `notify_progress_updated`. The `DownloadBroadcastObserver` handles all ActionCable broadcasting.
+No step, service, or command touches ActionCable directly. Observers handle all broadcasting.
 
 ```
-Steps notify observers                 Observer broadcasts             Client (JS)
-────────────────────                   ───────────────────             ────────────
-notify_status_changed  ──────────→  DownloadBroadcastObserver  ──→  ProgressController
-notify_progress_updated ─────────→    .on_status_changed()          handleStatus()
-                                      .on_progress_updated()        updateProgress()
-                                      .on_error()                   appendLog()
+Orchestrator (after each step)          Observer                        Client (JS)
+──────────────────────────────          ────────                        ────────────
+on_status_changed  ──────────────→  DownloadBroadcastObserver  ──→  handleStatus()
+on_log_added (via BaseStep#log!) ─→   .on_status_changed()         updateProgress()
+on_progress_updated (in-loop) ────→   .on_progress_updated()       appendLog()
+on_error (around hook) ──────────→    .on_log_added()
+                                      .on_error()
 ```
+
+**Where notifications happen:**
+- `on_status_changed` — orchestrator's `call` method, after each step
+- `on_log_added` — `BaseStep#log!`, on every log call
+- `on_progress_updated` — `DownloadImagesStep`, per-image in download loop
+- `on_error` — orchestrator's `around` hook, on failure
 
 ```
 app/
@@ -105,7 +113,5 @@ app/
 │   ├── context_observer.rb              # Base class (interface)
 │   └── download_broadcast_observer.rb   # ActionCable implementation
 ```
-
-Both `ServicePipeline` and `CommandChain` accept `observers:` — the observer pattern works across services and commands.
 
 Cable config: Redis in development/production, async in test.

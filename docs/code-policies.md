@@ -5,7 +5,7 @@
 ### Command Pattern
 All user-facing actions go through commands (`app/commands/`). Controllers should be thin — they call commands and handle redirects.
 
-Commands receive a **context hash** and return `self` with `success?`, `errors`, and `result`.
+Commands use the `interactor` gem. They receive context via `Interactor::Context` and fail with `context.fail!(message: "...")`.
 
 ### Command Composition
 When an action requires multiple steps, use `Interactor::Organizer` to compose commands. Don't nest command calls inside other commands.
@@ -51,8 +51,8 @@ class OrchestratorService
 end
 ```
 
-### Service Pipeline
-When a workflow has multiple sequential responsibilities, split it into steps and run them through `ServicePipeline`. Each step extends `BaseStep`, receives a shared context hash, and does one thing.
+### Interactor Pipeline
+When a workflow has multiple sequential responsibilities, split it into steps using `Interactor::Organizer`. Each step inherits `BaseStep`, receives shared `Interactor::Context`, and does one thing.
 
 ```ruby
 # Good — small focused steps composed via Interactor::Organizer
@@ -95,9 +95,15 @@ end
 ```
 
 Observers extend `ContextObserver` and implement:
-- `on_status_changed(context)` — called automatically after each step via `after` hook
-- `on_progress_updated(context)` — called explicitly for per-image progress
-- `on_error(context, error)` — called from orchestrator's `around` hook on failure
+- `on_status_changed(context)` — called by orchestrator after each step
+- `on_log_added(context, message, level)` — called by `BaseStep#log!` on every log
+- `on_progress_updated(context)` — called by `DownloadImagesStep` per-image
+- `on_error(context, error)` — called by orchestrator's `around` hook on failure
+
+### Shared Behavior Scope Rules
+- **All steps** use it → put in `BaseStep`
+- **Some steps** use it → extract to a module in `app/services/concerns/`
+- **One step** uses it → private method in that step
 
 ## Code Style
 
@@ -109,7 +115,7 @@ Observers extend `ContextObserver` and implement:
 ### Models
 - Validations, associations, scopes, and simple instance methods only
 - No HTTP calls or external service interactions
-- Broadcasting via `log!` method is acceptable since it's a model concern
+- No ActionCable broadcasting — models only persist data
 
 ### Services
 - One public method per service (usually `#call` or a descriptive name)

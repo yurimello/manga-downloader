@@ -2,17 +2,17 @@
 
 Services encapsulate business logic and are orchestrated by the `DownloadOrchestratorService`.
 
-## Service Pipeline
+## Interactor Pipeline
 
-The download workflow uses a **pipeline pattern** — a sequence of small, focused steps executed in order. Each step receives a shared context hash and does one thing.
+The download workflow uses `Interactor::Organizer` — a sequence of small, focused steps executed in order. Each step includes `Interactor` via `BaseStep` and shares state through `Interactor::Context`.
 
 ```
-ServicePipeline
-  ├── DownloadOrchestratorSteps::FetchMangaInfoStep   → extract ID, fetch title
-  ├── DownloadOrchestratorSteps::SelectChaptersStep   → fetch chapters, filter by language/volume, skip downloaded
-  ├── DownloadOrchestratorSteps::DownloadImagesStep   → count images, download with progress
-  ├── DownloadOrchestratorSteps::PackVolumesStep      → pack CBZ archives
-  └── DownloadOrchestratorSteps::RecordVolumesStep    → record volumes in DB, mark completed
+DownloadOrchestratorService (Interactor::Organizer)
+  ├── FetchMangaInfoStep   → extract ID, fetch title
+  ├── SelectChaptersStep   → fetch chapters, filter by language/volume, skip downloaded
+  ├── DownloadImagesStep   → count images, download with progress
+  ├── PackVolumesStep      → pack CBZ archives
+  └── RecordVolumesStep    → record volumes in DB, mark completed
 ```
 
 ### DownloadOrchestratorService
@@ -33,7 +33,12 @@ The **job** (`DownloadMangaJob`) is the composition root that wires up all depen
 
 ### Steps
 
-Each step extends `BaseStep` (which includes `Interactor`) and accesses shared state via `context`. `BaseStep` provides `download`, `log!`, `notify_status_changed`, and `notify_progress_updated`.
+Each step inherits from `BaseStep` (which includes `Interactor`) and accesses shared state via `context`.
+
+**Scope rules for shared behavior:**
+- **BaseStep** — methods used by all steps: `download`, `log!`
+- **Modules** (`app/services/concerns/`) — methods used by some steps: `FileSystemAccess` (provides `fs`)
+- **Private methods** — methods used by one step only: `cancelled?`, `notify_progress` in `DownloadImagesStep`
 
 | Step | Responsibility |
 |------|---------------|
@@ -63,7 +68,7 @@ Handles API requests to manga sources (rate-limited).
 
 - Retries up to 5 times on HTTP 429 or API error responses
 - Configurable delay between retries (default 2 seconds)
-- Methods: `get_json(url, params:)`, `download_file(url, dest_path)`
+- Methods: `get_json(url, params:)`
 - Custom exceptions: `RateLimitError`, `ApiError`
 
 **Important**: This service is only used for API calls. CDN image downloads use a separate Faraday connection in `ImageDownloaderService` with no rate limiting.
