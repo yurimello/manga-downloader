@@ -1,6 +1,6 @@
 module InteractorStepDefinitions
-  def step(klass, **defaults)
-    step_definitions << [klass, defaults]
+  def step(klass, dependencies: {})
+    step_definitions << [klass, dependencies]
     organize(*step_definitions.map(&:first))
   end
 

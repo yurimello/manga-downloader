@@ -4,18 +4,26 @@ class DownloadOrchestratorService
   extend InteractorStepDefinitions
 
   step DownloadOrchestratorSteps::FetchMangaInfoStep,
-       adapter: -> (ctx) { AdapterRegistry.for_url(ctx[:download].url) }
+       dependencies: {
+         adapter: -> (ctx) { AdapterRegistry.for_url(ctx[:download].url) }
+       }
 
   step DownloadOrchestratorSteps::SelectChaptersStep,
-       selector:  -> { ChapterSelectorService.new },
-       languages: -> { YAML.load_file(Rails.root.join("config", "languages.yml"))["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] } }
+       dependencies: {
+         selector:  -> { ChapterSelectorService.new },
+         languages: -> { YAML.load_file(Rails.root.join("config", "languages.yml"))["languages"].sort_by { |l| l["priority"] }.map { |l| l["code"] } }
+       }
 
   step DownloadOrchestratorSteps::DownloadImagesStep,
-       file_manager: -> { FileManager.new },
-       downloader:   -> (ctx) { ImageDownloaderService.new(adapter: ctx[:adapter], file_manager: ctx[:file_manager]) }
+       dependencies: {
+         file_manager: -> { FileManager.new },
+         downloader:   -> (ctx) { ImageDownloaderService.new(adapter: ctx[:adapter], file_manager: ctx[:file_manager]) }
+       }
 
   step DownloadOrchestratorSteps::PackVolumesStep,
-       packer: -> (ctx) { CbzPackerService.new(file_manager: ctx[:file_manager]) }
+       dependencies: {
+         packer: -> (ctx) { CbzPackerService.new(file_manager: ctx[:file_manager]) }
+       }
 
   step DownloadOrchestratorSteps::RecordVolumesStep
 
@@ -44,8 +52,8 @@ class DownloadOrchestratorService
   end
 
   def call
-    self.class.step_definitions.each do |step_class, defaults|
-      defaults.each do |key, factory|
+    self.class.step_definitions.each do |step_class, deps|
+      deps.each do |key, factory|
         context[key] ||= resolve_factory(factory, context)
       end
       step_class.call!(context)
