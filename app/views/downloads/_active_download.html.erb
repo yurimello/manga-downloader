@@ -5,8 +5,8 @@
 
   <div class="flex justify-between items-center mb-2">
     <div>
-      <span class="font-medium"><%= download.title || "Loading..." %></span>
-      <span class="text-xs text-gray-500 ml-2"><%= download.status.humanize %></span>
+      <span class="font-medium" data-progress-target="title"><%= download.title || "Loading..." %></span>
+      <span class="text-xs text-gray-500 ml-2" data-progress-target="status"><%= download.status.humanize %></span>
     </div>
     <%= button_to "Cancel", download_path(download), method: :delete,
         class: "text-xs text-red-400 hover:text-red-300",

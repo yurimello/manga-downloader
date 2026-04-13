@@ -50,7 +50,7 @@ RSpec.describe DownloadOrchestratorService do
       expect(download.error_message).to eq("boom")
     end
 
-    it "broadcasts progress" do
+    it "broadcasts image-level progress" do
       service = described_class.new(download)
 
       Dir.mktmpdir do |dir|
@@ -60,8 +60,32 @@ RSpec.describe DownloadOrchestratorService do
 
       expect(ActionCable.server).to have_received(:broadcast).with(
         "download_#{download.id}",
-        hash_including(type: "progress_updated")
+        hash_including(type: "progress_updated", :downloaded_images => a_kind_of(Integer), :total_images => a_kind_of(Integer))
       ).at_least(:once)
+    end
+
+    it "broadcasts status changes" do
+      service = described_class.new(download)
+
+      Dir.mktmpdir do |dir|
+        allow(Setting).to receive(:fetch).with(:destination_root, anything).and_return(dir)
+        service.call
+      end
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "status_changed", status: "downloading")
+      ).at_least(:once)
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "status_changed", status: "packing")
+      ).once
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        "download_#{download.id}",
+        hash_including(type: "status_changed", status: "completed")
+      ).once
     end
 
     it "creates log entries" do

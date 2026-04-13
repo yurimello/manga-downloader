@@ -10,8 +10,19 @@ class DownloadsController < ApplicationController
       volumes: params[:volumes].presence
     ).call
 
+
     if command.success?
       redirect_to root_path, notice: "Download queued!"
+    else
+      redirect_to root_path, alert: command.errors.join(", ")
+    end
+  end
+
+  def reprocess
+    command = ReprocessDownloadCommand.new(download_id: params[:id]).call
+
+    if command.success?
+      redirect_to root_path, notice: "Reprocessing queued!"
     else
       redirect_to root_path, alert: command.errors.join(", ")
     end

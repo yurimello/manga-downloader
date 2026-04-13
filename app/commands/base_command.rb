@@ -1,7 +1,8 @@
 class BaseCommand
-  attr_reader :result, :errors
+  attr_reader :result, :errors, :context
 
-  def initialize
+  def initialize(context = {})
+    @context = context
     @errors = []
     @result = nil
   end
@@ -12,6 +13,17 @@ class BaseCommand
 
   def success?
     @errors.empty?
+  end
+
+  def then(command_class)
+    return self unless success?
+
+    command = command_class.new(@context)
+    command.call
+    @errors.concat(command.errors)
+    @result = command.result if command.success?
+    @context = command.context
+    self
   end
 
   private

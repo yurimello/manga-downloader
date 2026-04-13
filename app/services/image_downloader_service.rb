@@ -1,27 +1,66 @@
 class ImageDownloaderService
-  def initialize(adapter:, http_client: nil, image_delay: 0.5)
+  def initialize(adapter:, concurrency: 4)
     @adapter = adapter
-    @http = http_client || HttpClientService.new
-    @image_delay = image_delay
+    @concurrency = concurrency
+    @downloaded_urls = Set.new
+    @mutex = Mutex.new
+    @cdn_conn = Faraday.new do |f|
+      f.adapter Faraday.default_adapter
+    end
   end
 
-  def download_chapter(chapter_id, dest_dir)
+  def count_images(chapter_id)
+    images = @adapter.fetch_chapter_images(chapter_id)
+    return 0 unless images[:base_url] && images[:hash]
+    images[:filenames].size
+  end
+
+  def download_chapter(chapter_id, dest_dir, &on_image_downloaded)
     images = @adapter.fetch_chapter_images(chapter_id)
     return 0 unless images[:base_url] && images[:hash]
 
     FileUtils.mkdir_p(dest_dir)
-    count = 0
 
-    images[:filenames].each_with_index do |filename, idx|
-      ext = File.extname(filename)
-      out_path = File.join(dest_dir, format("%03d%s", idx + 1, ext))
+    tasks = images[:filenames].each_with_index.filter_map do |filename, idx|
       url = @adapter.image_url(images[:base_url], images[:hash], filename)
 
-      if @http.download_file(url, out_path)
-        count += 1
+      skip = @mutex.synchronize { !@downloaded_urls.add?(url) }
+      next if skip
+
+      ext = File.extname(filename)
+      out_path = File.join(dest_dir, format("%03d%s", idx + 1, ext))
+      { url: url, out_path: out_path }
+    end
+
+    count = 0
+    queue = Queue.new
+    tasks.each { |t| queue << t }
+    @concurrency.times { queue << :done }
+
+    threads = @concurrency.times.map do
+      Thread.new do
+        while (task = queue.pop) != :done
+          if cdn_download(task[:url], task[:out_path])
+            @mutex.synchronize do
+              count += 1
+              on_image_downloaded&.call
+            end
+          end
+        end
       end
     end
 
+    threads.each(&:join)
     count
+  end
+
+  private
+
+  def cdn_download(url, dest_path)
+    response = @cdn_conn.get(url)
+    File.binwrite(dest_path, response.body) if response.status == 200
+    response.status == 200
+  rescue Faraday::Error
+    false
   end
 end

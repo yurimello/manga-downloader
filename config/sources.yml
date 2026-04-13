@@ -1,7 +1,7 @@
-sources:
-  mangadex:
-    adapter_class: MangadexAdapter
-    base_url: https://api.mangadex.org
-    rate_limit_retries: 5
-    rate_limit_delay: 2
-    image_delay: 0.5
+shared:
+  sources:
+    mangadex:
+      adapter_class: MangadexAdapter
+      base_url: https://api.mangadex.org
+      rate_limit_retries: 5
+      rate_limit_delay: 2

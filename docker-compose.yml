@@ -18,8 +18,8 @@ services:
     depends_on:
       - redis
     volumes:
-      - db_data:/rails/db
-      - ${DOWNLOAD_DIR:-./downloads}:/downloads
+      - storage_data:/rails/storage
+      - ${DOWNLOAD_DIR:-~/Comics/Manga}:/downloads
 
   worker:
     build: .
@@ -32,9 +32,9 @@ services:
     depends_on:
       - redis
     volumes:
-      - db_data:/rails/db
-      - ${DOWNLOAD_DIR:-./downloads}:/downloads
+      - storage_data:/rails/storage
+      - ${DOWNLOAD_DIR:-~/Comics/Manga}:/downloads
 
 volumes:
   redis_data:
-  db_data:
+  storage_data:

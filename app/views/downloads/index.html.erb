@@ -1,7 +1,7 @@
 <section class="mb-12">
   <h2 class="text-lg font-semibold mb-4">New Download</h2>
 
-  <%= form_with url: downloads_path, method: :post, class: "flex flex-col gap-3 sm:flex-row sm:items-end", data: { controller: "download-form" } do |f| %>
+  <%= form_with url: downloads_path, method: :post, class: "flex flex-col gap-3 sm:flex-row sm:items-end", data: { controller: "download-form", action: "submit->download-form#submit" } do |f| %>
     <div class="flex-1">
       <label class="block text-sm text-gray-400 mb-1">MangaDex URL</label>
       <input type="text" name="url" placeholder="https://mangadex.org/title/..." required

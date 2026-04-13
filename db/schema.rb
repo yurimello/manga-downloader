@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_171813) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_202505) do
   create_table "download_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "download_id", null: false
@@ -18,6 +18,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_171813) do
     t.text "message"
     t.datetime "updated_at", null: false
     t.index ["download_id"], name: "index_download_logs_on_download_id"
+  end
+
+  create_table "download_volumes", force: :cascade do |t|
+    t.integer "chapters_count", default: 0
+    t.datetime "created_at", null: false
+    t.integer "download_id", null: false
+    t.string "manga_id", null: false
+    t.integer "pages_count", default: 0
+    t.datetime "updated_at", null: false
+    t.string "volume", null: false
+    t.index ["download_id"], name: "index_download_volumes_on_download_id"
+    t.index ["manga_id", "volume"], name: "index_download_volumes_on_manga_id_and_volume", unique: true
   end
 
   create_table "downloads", force: :cascade do |t|
@@ -43,4 +55,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_171813) do
   end
 
   add_foreign_key "download_logs", "downloads"
+  add_foreign_key "download_volumes", "downloads"
 end

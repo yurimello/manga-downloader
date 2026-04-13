@@ -6,4 +6,5 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   config.allow_http_connections_when_no_cassette = false
   config.default_cassette_options = { record: :once }
+  config.ignore_localhost = true
 end
