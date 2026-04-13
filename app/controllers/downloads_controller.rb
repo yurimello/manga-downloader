@@ -5,7 +5,7 @@ class DownloadsController < ApplicationController
   end
 
   def create
-    result = DownloadMangaCommand.call(
+    result = CreateDownloadCommand.call(
       url: params[:url],
       volumes: params[:volumes].presence
     )

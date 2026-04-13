@@ -1,5 +1,5 @@
 class ReprocessDownloadCommand
   include Interactor::Organizer
 
-  organize ResolveDownloadCommand, DownloadMangaCommand
+  organize ResolveDownloadCommand, ValidateDestinationCommand, DownloadMangaCommand
 end
