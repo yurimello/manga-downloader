@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "dropdown", "results", "urlInput", "source"]
+  static targets = ["input", "dropdown", "results", "urlInput", "source", "sort"]
 
   connect() {
     this.offset = 0
@@ -36,7 +36,8 @@ export default class extends Controller {
 
     try {
       const source = this.hasSourceTarget ? this.sourceTarget.value : "mangadex"
-      const response = await fetch(`/search?q=${encodeURIComponent(this.query)}&offset=${this.offset}&source=${source}`)
+      const sort = this.hasSortTarget ? this.sortTarget.value : "relevance"
+      const response = await fetch(`/search?q=${encodeURIComponent(this.query)}&offset=${this.offset}&source=${source}&sort=${sort}`)
       const data = await response.json()
 
       this.total = data.total
@@ -64,10 +65,22 @@ export default class extends Controller {
         item.appendChild(img)
       }
 
+      const textWrapper = document.createElement("div")
+      textWrapper.className = "min-w-0 flex-1"
+
       const text = document.createElement("span")
-      text.className = "text-sm text-white truncate"
+      text.className = "text-sm text-white"
       text.textContent = manga.title
-      item.appendChild(text)
+      textWrapper.appendChild(text)
+
+      if (manga.alternative_manga_title) {
+        const alt = document.createElement("span")
+        alt.className = "block text-xs text-gray-500 truncate"
+        alt.textContent = manga.alternative_manga_title
+        textWrapper.appendChild(alt)
+      }
+
+      item.appendChild(textWrapper)
 
       this.resultsTarget.appendChild(item)
     })

@@ -19,7 +19,7 @@ class BaseAdapter
     raise NotImplementedError
   end
 
-  def search_manga(query, limit: 5, offset: 0)
+  def search_manga(query, limit: 5, offset: 0, sort: "relevance")
     raise NotImplementedError
   end
 

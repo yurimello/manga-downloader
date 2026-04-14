@@ -4,27 +4,31 @@ class MangadexAdapter < BaseAdapter
     @http = http_client
   end
 
-  def search_manga(query, limit: 5, offset: 0)
-    data = @http.get_json(
-      "#{@base_url}/manga",
-      params: {
-        "title" => query,
-        "limit" => limit,
-        "offset" => offset,
-        "includes[]" => "cover_art",
-        "order[followedCount]" => "desc"
-      }
-    )
+  def search_manga(query, limit: 5, offset: 0, sort: "relevance", languages: nil)
+    languages ||= LanguageConfig.codes
+
+    query_string = URI.encode_www_form([
+      ["title", query],
+      ["limit", limit],
+      ["offset", offset],
+      ["includes[]", "cover_art"],
+      ["order[#{sort}]", "desc"]
+    ] + languages.map { |l| ["availableTranslatedLanguage[]", l] })
+
+    data = @http.get_json("#{@base_url}/manga?#{query_string}")
 
     results = (data["data"] || []).map do |manga|
-      titles = manga.dig("attributes", "title") || {}
+      attrs = manga["attributes"] || {}
+      titles = attrs["title"] || {}
       title = titles["en"] || titles["ja-ro"] || titles["ja"] || "Unknown"
+      alt_en = (attrs["altTitles"] || []).find { |h| h.key?("en") }&.dig("en") || ""
       cover = (manga["relationships"] || []).find { |r| r["type"] == "cover_art" }
       cover_filename = cover&.dig("attributes", "fileName")
       thumbnail = cover_filename ? "https://uploads.mangadex.org/covers/#{manga["id"]}/#{cover_filename}.256.jpg" : nil
       {
         id: manga["id"],
         title: title,
+        alternative_manga_title: alt_en,
         url: "https://mangadex.org/title/#{manga["id"]}",
         thumbnail: thumbnail
       }

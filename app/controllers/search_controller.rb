@@ -16,7 +16,8 @@ class SearchController < ApplicationController
       return
     end
 
-    data = adapter.search_manga(query, limit: 5, offset: offset)
+    sort = params[:sort].presence || "relevance"
+    data = adapter.search_manga(query, limit: 5, offset: offset, sort: sort)
     render json: data
   end
 end

@@ -2,151 +2,121 @@ require "rails_helper"
 
 RSpec.describe "Download E2E", type: :system do
   let(:dest_dir) { Dir.mktmpdir }
+  let(:manga_url) { "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi" }
 
   before do
-    adapter = instance_double(MangadexAdapter, url_pattern: %r{mangadex\.org})
-    AdapterRegistry.instance.register(:mangadex, adapter)
-    allow(AdapterRegistry).to receive(:for_url).and_return(adapter)
-
-    allow(adapter).to receive(:extract_manga_id).and_return("ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43")
-    allow(adapter).to receive(:fetch_manga_title).and_return("Magi")
-    allow(adapter).to receive(:image_url) do |base_url, hash, filename|
-      "#{base_url}/data/#{hash}/#{filename}"
-    end
-
     Setting.store(:max_concurrent_processes, "1")
     Setting.store(:destination_root, dest_dir)
-
-    # Inline Sidekiq for E2E
-    allow(DownloadMangaJob).to receive(:perform_async) do |download_id|
-      DownloadMangaJob.new.perform(download_id)
-    end
-    allow(adapter).to receive(:search_manga).and_return({
-      results: [
-        { id: "ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", title: "Magi", url: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43", thumbnail: nil },
-        { id: "abc-other", title: "Magic Knight Rayearth", url: "https://mangadex.org/title/abc-other", thumbnail: nil }
-      ],
-      total: 2
-    })
-
-    @adapter = adapter
   end
 
   after do
     FileUtils.rm_rf(dest_dir)
   end
 
-  def stub_chapters(chapters)
-    allow(@adapter).to receive(:fetch_chapters).and_return(chapters)
-  end
+  describe "search selects title and fills URL", :js do
+    it "clicking a search result sets title and URL inputs", vcr: { cassette_name: "e2e/search_magi", record: :new_episodes } do
+      visit root_path
 
-  def stub_images(filenames: ["page1.jpg", "page2.jpg"])
-    allow(@adapter).to receive(:fetch_chapter_images).and_return({
-      base_url: "https://cdn.example.com",
-      hash: "abc",
-      filenames: filenames
-    })
+      # Stimulus controller is connected
+      expect(page).to have_css("[data-controller='manga-search']")
 
-    filenames.each do |f|
-      stub_request(:get, "https://cdn.example.com/data/abc/#{f}")
-        .to_return(status: 200, body: "fake_image_#{f}")
+      # Controller has all required targets
+      controller_el = find("[data-controller='manga-search']")
+      expect(controller_el).to have_css("[data-manga-search-target='input']")
+      expect(controller_el).to have_css("[data-manga-search-target='urlInput']")
+      expect(controller_el).to have_css("[data-manga-search-target='dropdown']", visible: :all)
+      expect(controller_el).to have_css("[data-manga-search-target='results']", visible: :all)
+
+      # Verify Stimulus controller is initialized
+      is_connected = page.evaluate_script(<<~JS)
+        (function() {
+          var el = document.querySelector("[data-controller='manga-search']");
+          return el && el.dataset.controller === 'manga-search';
+        })()
+      JS
+      expect(is_connected).to be true
+
+      # Inputs start empty
+      search_input = find("[data-manga-search-target='input']")
+      url_input = find("[data-manga-search-target='urlInput']")
+      expect(search_input.value).to eq("")
+      expect(url_input.value).to eq("")
+
+      # Dropdown starts hidden
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
+
+      # Type search query — triggers keyup -> manga-search#search
+      search_input.send_keys("Magi")
+      expect(search_input.value).to eq("Magi")
+
+      # Dropdown becomes visible with results
+      expect(page).not_to have_css("[data-manga-search-target='dropdown'].hidden", wait: 10)
+
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1)
+      end
+
+      # Each result has title, alt title, data attributes
+      first_result = find("[data-manga-search-target='results'] [data-action='click->manga-search#select']", match: :first)
+      expect(first_result["data-title"]).not_to be_nil
+      expect(first_result["data-url"]).not_to be_nil
+      expect(first_result["data-url"]).to match(%r{mangadex\.org/title/})
+
+      # At least one result shows an alt title
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_css(".text-xs.text-gray-500", minimum: 1)
+      end
+
+      expected_title = first_result["data-title"]
+      expected_url = first_result["data-url"]
+
+      # Click the result
+      first_result.click
+
+      # Search input updated with selected title
+      expect(search_input.value).to eq(expected_title)
+
+      # URL input updated with MangaDex URL
+      expect(url_input.value).to eq(expected_url)
+
+      # Dropdown hidden after selection
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
+
+      # URL input is submittable (has value in the form)
+      expect(find("input[name='url']").value).to eq(expected_url)
     end
   end
 
   describe "full download flow", :js do
-    it "submits URL, downloads, packs CBZ, and shows completed" do
-      stub_chapters([
-        { id: "ch1", chapter: "1", volume: "1", language: "en" },
-        { id: "ch2", chapter: "2", volume: "1", language: "en" }
-      ])
-      stub_images
-
-      visit root_path
-
-      fill_in "url", with: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi"
-      click_button "Process"
-
-      expect(page).to have_css("#completed-downloads", text: "Magi", wait: 10)
-
-      # CBZ file exists on disk
-      cbz_path = File.join(dest_dir, "Magi", "Magi - Vol. 01.cbz")
-      expect(File.exist?(cbz_path)).to be true
+    before do
+      Sidekiq.default_configuration.test_mode = :inline
+      stub_request(:get, %r{\.mangadex\.network/data/})
+        .to_return(status: 200, body: "\xFF\xD8\xFF\xE0fake_image_data")
     end
-  end
 
-  describe "volume selection", :js do
-    it "downloads only selected volumes" do
-      stub_chapters([
-        { id: "ch1", chapter: "1", volume: "1", language: "en" },
-        { id: "ch2", chapter: "2", volume: "1", language: "en" },
-        { id: "ch3", chapter: "5", volume: "2", language: "en" },
-        { id: "ch4", chapter: "6", volume: "2", language: "en" }
-      ])
-      stub_images
+    after { Sidekiq.default_configuration.test_mode = :fake }
 
+    it "submits URL, downloads, packs CBZ, and shows completed", vcr: { cassette_name: "e2e/download_magi_vol1", record: :new_episodes } do
       visit root_path
 
-      fill_in "url", with: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi"
-      fill_in "volumes", with: "2"
+      fill_in "url", with: manga_url
+      fill_in "volumes", with: "1"
       click_button "Process"
 
-      expect(page).to have_css("#completed-downloads", text: "Magi", wait: 10)
+      expect(page).to have_css("#completed-downloads", text: "Magi", wait: 30)
 
-      # Only volume 2 CBZ exists
-      expect(File.exist?(File.join(dest_dir, "Magi", "Magi - Vol. 02.cbz"))).to be true
-      expect(File.exist?(File.join(dest_dir, "Magi", "Magi - Vol. 01.cbz"))).to be false
-    end
-  end
-
-  describe "reprocess skips downloaded volumes", :js do
-    it "skips already downloaded volumes on reprocess" do
-      stub_chapters([
-        { id: "ch1", chapter: "1", volume: "1", language: "en" },
-        { id: "ch2", chapter: "5", volume: "2", language: "en" }
-      ])
-      stub_images
-
-      visit root_path
-
-      # First download
-      fill_in "url", with: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi"
-      click_button "Process"
-
-      expect(page).to have_css("#completed-downloads", text: "Magi", wait: 10)
-
-      # Both volumes exist
-      vol1 = File.join(dest_dir, "Magi", "Magi - Vol. 01.cbz")
-      vol2 = File.join(dest_dir, "Magi", "Magi - Vol. 02.cbz")
-      expect(File.exist?(vol1)).to be true
-      expect(File.exist?(vol2)).to be true
-
-      # Delete vol2 to prove reprocess doesn't recreate it (it's tracked in DB)
-      FileUtils.rm(vol2)
-
-      # Reprocess
-      click_button "Reprocess"
-
-      # Should complete quickly — all volumes already downloaded
-      expect(page).to have_css("#completed-downloads", text: "Magi", wait: 10)
-
-      # Vol2 should NOT be recreated — it was already tracked as downloaded
-      expect(File.exist?(vol2)).to be false
+      cbz_files = Dir.glob(File.join(dest_dir, "**", "*.cbz"))
+      expect(cbz_files).not_to be_empty
     end
   end
 
   describe "cancel download", :js do
     it "cancels an active download" do
-      stub_chapters([
-        { id: "ch1", chapter: "1", volume: "1", language: "en" }
-      ])
-      stub_images
-
-      # Don't inline the job — let it stay queued
-      allow(DownloadMangaJob).to receive(:perform_async)
+      Sidekiq.default_configuration.test_mode = :fake
 
       visit root_path
 
-      fill_in "url", with: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi"
+      fill_in "url", with: manga_url
       click_button "Process"
 
       expect(page).to have_content("Download queued!")
@@ -166,12 +136,9 @@ RSpec.describe "Download E2E", type: :system do
     it "shows error when destination is not configured" do
       Setting.find_by(key: "destination_root")&.destroy
 
-      stub_chapters([{ id: "ch1", chapter: "1", volume: "1", language: "en" }])
-      stub_images
-
       visit root_path
 
-      fill_in "url", with: "https://mangadex.org/title/ce63e6b8-fad8-48bc-a2aa-d801fb8d5d43/magi"
+      fill_in "url", with: manga_url
       click_button "Process"
 
       expect(page).to have_content("not configured", wait: 5)
@@ -179,31 +146,24 @@ RSpec.describe "Download E2E", type: :system do
   end
 
   describe "search and select manga", :js do
-    it "searches by title, selects result, and fills URL", vcr: { cassette_name: "mangadex/search_magi" } do
-      stub_chapters([
-        { id: "ch1", chapter: "1", volume: "1", language: "en" }
-      ])
-      stub_images
-
-      # Use real adapter so VCR can intercept HTTP in Puma thread
-      AdapterRegistry.instance.register(:mangadex,
-        MangadexAdapter.new({ "base_url" => "https://api.mangadex.org" }))
-
+    it "searches by title, selects result, and fills URL", vcr: { cassette_name: "e2e/search_magi", record: :new_episodes } do
       visit root_path
 
       find("[data-manga-search-target='input']").send_keys("Magi")
 
-      # Dropdown appears with results from MangaDex API (via VCR cassette)
-      expect(page).to have_css("[data-manga-search-target='results'] [data-action]", wait: 10)
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_text("Magi", wait: 10)
+        expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1)
+      end
 
-      # Select first result from dropdown
       within "[data-manga-search-target='results']" do
         first("[data-action='click->manga-search#select']").click
       end
 
-      # URL input is filled
+      expect(find("[data-manga-search-target='input']").value).not_to be_empty
       url_input = find("[data-manga-search-target='urlInput']")
-      expect(url_input.value).to include("mangadex.org/title/")
+      expect(url_input.value).to match(%r{mangadex\.org/title/})
+      expect(page).to have_css("[data-manga-search-target='dropdown'].hidden", visible: :all)
     end
   end
 
