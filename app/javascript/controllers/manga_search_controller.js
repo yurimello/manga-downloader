@@ -65,10 +65,22 @@ export default class extends Controller {
         item.appendChild(img)
       }
 
+      const textWrapper = document.createElement("div")
+      textWrapper.className = "truncate"
+
       const text = document.createElement("span")
-      text.className = "text-sm text-white truncate"
+      text.className = "text-sm text-white"
       text.textContent = manga.title
-      item.appendChild(text)
+      textWrapper.appendChild(text)
+
+      if (manga.alt_title) {
+        const alt = document.createElement("span")
+        alt.className = "block text-xs text-gray-500 truncate"
+        alt.textContent = manga.alt_title
+        textWrapper.appendChild(alt)
+      }
+
+      item.appendChild(textWrapper)
 
       this.resultsTarget.appendChild(item)
     })

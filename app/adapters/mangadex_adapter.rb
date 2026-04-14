@@ -18,14 +18,18 @@ class MangadexAdapter < BaseAdapter
     data = @http.get_json("#{@base_url}/manga?#{query_string}")
 
     results = (data["data"] || []).map do |manga|
-      titles = manga.dig("attributes", "title") || {}
+      attrs = manga["attributes"] || {}
+      titles = attrs["title"] || {}
       title = titles["en"] || titles["ja-ro"] || titles["ja"] || "Unknown"
+      alt_titles = (attrs["altTitles"] || []).map(&:values).flatten
+      alt_en = alt_titles.find { |t| t != title } || ""
       cover = (manga["relationships"] || []).find { |r| r["type"] == "cover_art" }
       cover_filename = cover&.dig("attributes", "fileName")
       thumbnail = cover_filename ? "https://uploads.mangadex.org/covers/#{manga["id"]}/#{cover_filename}.256.jpg" : nil
       {
         id: manga["id"],
         title: title,
+        alt_title: alt_en,
         url: "https://mangadex.org/title/#{manga["id"]}",
         thumbnail: thumbnail
       }
