@@ -21,8 +21,7 @@ class MangadexAdapter < BaseAdapter
       attrs = manga["attributes"] || {}
       titles = attrs["title"] || {}
       title = titles["en"] || titles["ja-ro"] || titles["ja"] || "Unknown"
-      alt_titles = (attrs["altTitles"] || []).map(&:values).flatten
-      alt_en = alt_titles.find { |t| t != title } || ""
+      alt_en = (attrs["altTitles"] || []).find { |h| h.key?("en") }&.dig("en") || ""
       cover = (manga["relationships"] || []).find { |r| r["type"] == "cover_art" }
       cover_filename = cover&.dig("attributes", "fileName")
       thumbnail = cover_filename ? "https://uploads.mangadex.org/covers/#{manga["id"]}/#{cover_filename}.256.jpg" : nil

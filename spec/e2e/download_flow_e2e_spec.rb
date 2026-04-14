@@ -56,11 +56,16 @@ RSpec.describe "Download E2E", type: :system do
         expect(page).to have_css("[data-action='click->manga-search#select']", minimum: 1)
       end
 
-      # Each result has data-title and data-url attributes
+      # Each result has title, alt title, data attributes
       first_result = find("[data-manga-search-target='results'] [data-action='click->manga-search#select']", match: :first)
       expect(first_result["data-title"]).not_to be_nil
       expect(first_result["data-url"]).not_to be_nil
       expect(first_result["data-url"]).to match(%r{mangadex\.org/title/})
+
+      # At least one result shows an alt title
+      within "[data-manga-search-target='results']" do
+        expect(page).to have_css(".text-xs.text-gray-500", minimum: 1)
+      end
 
       expected_title = first_result["data-title"]
       expected_url = first_result["data-url"]
