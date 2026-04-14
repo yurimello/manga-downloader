@@ -66,7 +66,7 @@ export default class extends Controller {
       }
 
       const textWrapper = document.createElement("div")
-      textWrapper.className = "truncate"
+      textWrapper.className = "min-w-0 flex-1"
 
       const text = document.createElement("span")
       text.className = "text-sm text-white"

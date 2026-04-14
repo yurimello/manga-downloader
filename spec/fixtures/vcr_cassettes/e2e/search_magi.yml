@@ -27,9 +27,9 @@ http_interactions:
       X-Cache:
       - HIT (fresh)
       X-Cache-Age:
-      - '51.136'
+      - '268.525'
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Cache-Rid:
       - 16ac06de-6017-41db-bbc0-5f3d106b7b66
       Accept-Ranges:
@@ -49,7 +49,7 @@ http_interactions:
       Via:
       - HTTP/1.1 NA-EAST-N1x1
       X-Request-Id:
-      - e5d51376-e8aa-4db3-94cb-14bb497a9b0b
+      - bc1af0e5-533b-45a8-8a87-21df317d95ea
       Permissions-Policy:
       - fullscreen=(self)
       Referrer-Policy:
@@ -166,5 +166,5 @@ http_interactions:
         Her Brother by Igarashi Ran  \n  \n13. Magic! by Mizuhara Kenta  \n  \n14.
         The Kind Magician and the Paper Bag Girl by MIZUTANI Yuzu & KAEDE Tohru  \n  \n15.
         Secret Service by Suzuki Ichiko"},"isLocked":false,"links":{},"officialLinks":null,"originalLanguage":"ja","lastVolume":"","lastChapter":"","publicationDemographic":"josei","status":"completed","year":null,"contentRating":"safe","tags":[{"id":"51d83883-4103-437c-b4b1-731cb73d786c","type":"tag","attributes":{"name":{"en":"Anthology"},"description":{},"group":"format","version":1},"relationships":[]},{"id":"a1f53773-c69a-4ce5-8cab-fffcd90b1565","type":"tag","attributes":{"name":{"en":"Magic"},"description":{},"group":"theme","version":1},"relationships":[]},{"id":"b9af3a63-f058-46de-a9a0-e0c13906197a","type":"tag","attributes":{"name":{"en":"Drama"},"description":{},"group":"genre","version":1},"relationships":[]},{"id":"cdc58593-87dd-415e-bbc0-2ec27bf404cc","type":"tag","attributes":{"name":{"en":"Fantasy"},"description":{},"group":"genre","version":1},"relationships":[]}],"state":"published","chapterNumbersResetOnNewVolume":false,"createdAt":"2018-04-19T09:34:39+00:00","updatedAt":"2022-08-29T01:37:44+00:00","version":4,"availableTranslatedLanguages":["pt-br","en","fr","it"],"latestUploadedChapter":"938c4c67-b062-4440-a46b-2c6ffbc49b5e"},"relationships":[{"id":"01305080-422b-4d2b-85f8-adf93b916f5d","type":"author"},{"id":"0a4cc1e2-a49d-434d-901d-e92c2e68b0a2","type":"author"},{"id":"0ba6755b-df00-4e4f-9d5c-9e17b45978ab","type":"author"},{"id":"434f6938-1459-437b-b763-e32c5a68c6f6","type":"author"},{"id":"4c5c1e78-4fa5-46cd-a329-a33d56223635","type":"author"},{"id":"5414d89c-3ffc-4cf5-ace3-4cc6399acf40","type":"author"},{"id":"62b6dba5-eeb3-41f3-a49b-8b1344549e38","type":"author"},{"id":"6ccf732b-fa77-4c40-a163-c80df7e58183","type":"author"},{"id":"74396a27-2bfa-44a9-b5cd-758c2b3574c7","type":"author"},{"id":"90ecb9ab-1065-4970-bd69-093229523947","type":"author"},{"id":"994afd30-af0d-404a-a2b7-415f8f0eab1b","type":"author"},{"id":"a5c5bd9f-3804-4772-9469-8aba2477a2f9","type":"author"},{"id":"e36dd543-1484-4975-ad31-c2707752a176","type":"author"},{"id":"fc216f23-181c-4fd3-8f18-0c946c39a949","type":"author"},{"id":"01305080-422b-4d2b-85f8-adf93b916f5d","type":"artist"},{"id":"0a4cc1e2-a49d-434d-901d-e92c2e68b0a2","type":"artist"},{"id":"0ba6755b-df00-4e4f-9d5c-9e17b45978ab","type":"artist"},{"id":"434f6938-1459-437b-b763-e32c5a68c6f6","type":"artist"},{"id":"4c5c1e78-4fa5-46cd-a329-a33d56223635","type":"artist"},{"id":"5414d89c-3ffc-4cf5-ace3-4cc6399acf40","type":"artist"},{"id":"62b6dba5-eeb3-41f3-a49b-8b1344549e38","type":"artist"},{"id":"6ccf732b-fa77-4c40-a163-c80df7e58183","type":"artist"},{"id":"74396a27-2bfa-44a9-b5cd-758c2b3574c7","type":"artist"},{"id":"90ecb9ab-1065-4970-bd69-093229523947","type":"artist"},{"id":"994afd30-af0d-404a-a2b7-415f8f0eab1b","type":"artist"},{"id":"a5c5bd9f-3804-4772-9469-8aba2477a2f9","type":"artist"},{"id":"e36dd543-1484-4975-ad31-c2707752a176","type":"artist"},{"id":"fc216f23-181c-4fd3-8f18-0c946c39a949","type":"artist"},{"id":"0ef4fac0-c829-4f22-bda1-e1a546ad0e84","type":"cover_art","attributes":{"description":"","volume":null,"fileName":"4d499df1-e885-4ef3-8462-95fc6cfabdd3.jpg","locale":"ja","createdAt":"2021-05-24T17:53:53+00:00","updatedAt":"2021-05-24T17:53:53+00:00","version":1}},{"id":"1b9f894f-58c1-4fb2-8205-fccccda8859c","type":"manga","related":"same_franchise"}]}],"limit":5,"offset":0,"total":960}'
-  recorded_at: Tue, 14 Apr 2026 00:25:53 GMT
+  recorded_at: Tue, 14 Apr 2026 00:29:30 GMT
 recorded_with: VCR 6.4.0
