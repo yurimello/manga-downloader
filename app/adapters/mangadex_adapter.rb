@@ -28,7 +28,7 @@ class MangadexAdapter < BaseAdapter
       {
         id: manga["id"],
         title: title,
-        alt_title: alt_en,
+        alternative_manga_title: alt_en,
         url: "https://mangadex.org/title/#{manga["id"]}",
         thumbnail: thumbnail
       }

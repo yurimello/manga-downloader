@@ -73,10 +73,10 @@ export default class extends Controller {
       text.textContent = manga.title
       textWrapper.appendChild(text)
 
-      if (manga.alt_title) {
+      if (manga.alternative_manga_title) {
         const alt = document.createElement("span")
         alt.className = "block text-xs text-gray-500 truncate"
-        alt.textContent = manga.alt_title
+        alt.textContent = manga.alternative_manga_title
         textWrapper.appendChild(alt)
       }
 
