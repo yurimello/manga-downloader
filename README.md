@@ -4,18 +4,49 @@ A Rails application for downloading manga from various sources, packing chapters
 
 ## Features
 
-- **Search manga by title** — dropdown with thumbnails, alt titles, infinite scroll, sorted by relevance/rating/popularity
-- Download manga from MangaDex (extensible adapter pattern for future sources)
-- Multi-language support with priority: pt-br > es-la > es > en > fr > it
-- Volume selection (download specific volumes or all)
+### Search
+- Search manga by title with debounced input (300ms)
+- Dropdown with cover thumbnails and alternative English titles
+- Paginated by 5, infinite scroll loads next page on scroll
+- Sort by: relevance (default), rating, popularity, title, newest, recently updated
+- Results filtered by configured languages
+- Source selector in collapsible Advanced panel (MangaDex by default)
+- Click result to fill title and URL inputs
+
+### Download
+- Download manga by pasting a MangaDex URL or selecting from search
+- Volume selection — download specific volumes (e.g., "1, 2, 3") or all
 - Volume tracking — skips already-downloaded volumes on reprocess
 - Parallel CDN image downloads (4 concurrent threads)
-- Real-time progress via ActionCable (WebSocket)
-- Background processing with Sidekiq + Redis
-- CBZ volume packing
-- Configurable concurrent downloads and destination directory
-- Reprocess action for retrying downloads
-- Settings validation — destination must be writable, errors shown in real time
+- CBZ volume packing with sequential page numbering
+- Reprocess completed/failed downloads (skips what's already done)
+- Cancel active downloads
+- Destination validation — blocks download if path not configured or not writable
+
+### Real-time Updates
+- Progress bar updates per-image via ActionCable (no DB writes)
+- Status transitions shown live: queued → downloading → packing → completed
+- Log panel with color-coded entries (info/warn/error) appended in real time
+- Page auto-reloads when download completes or fails
+- Settings validation errors broadcast in real time
+
+### Configuration
+- Max concurrent downloads (1-10)
+- Destination root directory (validated as writable)
+- Language priorities (`config/languages.yml`)
+- Manga sources (`config/sources.yml`)
+
+### Multi-language
+- Chapter selection by language priority: pt-br > es-la > es > en > fr > it
+- Best available language per chapter number
+- Search results filtered to configured languages
+
+### Infrastructure
+- Background job processing with Sidekiq + Redis
+- Queue throttling — re-enqueues when at max capacity
+- Docker support: development (live reload) and production (multi-stage build)
+- Dark theme UI with Tailwind CSS
+- Form submit debouncer prevents duplicate clicks
 
 ## Architecture
 
