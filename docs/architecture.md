@@ -66,11 +66,13 @@ Key-value store for persistent configuration. Includes `Observable`.
 ## Search Flow
 
 1. User types in the search input — Stimulus `manga_search_controller` debounces (300ms)
-2. JS fetches `GET /search?q=query&offset=0&source=mangadex`
-3. `SearchController` calls `adapter.search_manga(query)` via `AdapterRegistry.for_source`
-4. Results rendered in dropdown with thumbnails — max 5 visible, infinite scroll loads next 5
-5. User clicks a result — title fills search input, URL fills URL input
-6. Advanced panel allows selecting a different source adapter
+2. JS fetches `GET /search?q=query&offset=0&source=mangadex&sort=relevance`
+3. `SearchController` calls `adapter.search_manga(query, sort:, limit:, offset:)` via `AdapterRegistry.for_source`
+4. Results filtered by configured languages (from `languages.yml`)
+5. Dropdown shows: thumbnail, title, alternative English title — max 5 visible
+6. Infinite scroll loads next 5 when scrolling to bottom
+7. User clicks a result — title fills search input, URL fills URL input
+8. Advanced panel: source adapter selector, sort by (relevance, rating, popularity, title, newest, recently updated)
 
 ## Request Flow
 
